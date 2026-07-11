@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design System — tokens (docs/03-design-system.md)
+ * Primária: Violeta Profundo · Secundária: Preto · Neutros de apoio
+ */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 260 15% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 260 15% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 260 15% 12%;
+    --muted: 260 12% 96%;
+    --muted-foreground: 260 8% 45%;
+    --border: 260 12% 90%;
+    --input: 260 12% 90%;
+    --ring: 265 84% 58%;
+
+    --primary: 265 84% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 10% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 265 60% 96%;
+    --accent-foreground: 265 80% 30%;
+
+    --success: 152 60% 42%;
+    --success-foreground: 0 0% 100%;
+    --warning: 40 92% 52%;
+    --warning-foreground: 260 15% 12%;
+    --danger: 0 72% 52%;
+    --danger-foreground: 0 0% 100%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 260 18% 7%;
+    --foreground: 260 10% 96%;
+    --card: 260 16% 10%;
+    --card-foreground: 260 10% 96%;
+    --popover: 260 16% 10%;
+    --popover-foreground: 260 10% 96%;
+    --muted: 260 12% 16%;
+    --muted-foreground: 260 8% 62%;
+    --border: 260 12% 18%;
+    --input: 260 12% 18%;
+    --ring: 265 84% 66%;
+
+    --primary: 265 84% 66%;
+    --primary-foreground: 260 20% 8%;
+    --secondary: 260 10% 92%;
+    --secondary-foreground: 260 18% 8%;
+    --accent: 265 40% 20%;
+    --accent-foreground: 265 88% 88%;
+
+    --success: 152 55% 46%;
+    --success-foreground: 260 20% 8%;
+    --warning: 40 90% 56%;
+    --warning-foreground: 260 20% 8%;
+    --danger: 0 70% 58%;
+    --danger-foreground: 0 0% 100%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}

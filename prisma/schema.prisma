@@ -1,0 +1,551 @@
+// Fonte de verdade do banco de dados (docs/04-banco-de-dados.md)
+// PostgreSQL (Supabase) · multi-tenant por Organization · RLS aplicado via supabase/policies
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/* ---------- Enums ---------- */
+
+enum RoleKey {
+  ADMIN_GERAL
+  ADMIN
+  LIDER_LOUVOR
+  COORD_MUSICAL
+  PASTOR
+  SECRETARIO
+  TECNICO_SOM
+  MUSICO
+}
+
+enum InstrumentCategoryKey {
+  LIDERANCA
+  VOZ
+  RITMO
+  HARMONIA
+  CORDAS
+  SOPROS_MADEIRA
+  SOPROS_METAIS
+  PERCUSSAO_ORQUESTRAL
+  PRODUCAO
+}
+
+enum SkillLevel {
+  INICIANTE
+  INTERMEDIARIO
+  AVANCADO
+  PROFISSIONAL
+}
+
+enum AssignmentStatus {
+  CONVIDADO
+  CONFIRMADO
+  RECUSADO
+  SUBSTITUIDO
+}
+
+enum ImplementationStage {
+  EM_ANALISE
+  APROVADA
+  EM_ESTUDO
+  ENSAIANDO
+  PRONTA
+  IMPLANTADA
+}
+
+enum ServiceStatus {
+  RASCUNHO
+  PLANEJAMENTO
+  CONFIRMADO
+  CONCLUIDO
+  CANCELADO
+}
+
+enum FileKind {
+  PLAYBACK
+  PARTITURA
+  MULTITRACK
+  GUIA_VOCAL
+  CIFRA
+  LETRA
+  CLIQUE
+  OUTRO
+}
+
+/* ---------- Tenant ---------- */
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campuses      Campus[]
+  users         User[]
+  members       Member[]
+  instruments   Instrument[]
+  serviceTypes  ServiceType[]
+  services      Service[]
+  songs         Song[]
+  tags          Tag[]
+  executions    SongExecution[]
+  announcements Announcement[]
+
+  @@map("organizations")
+}
+
+model Campus {
+  id             String  @id @default(cuid())
+  organizationId String
+  name           String
+  address        String?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  services     Service[]
+
+  @@index([organizationId])
+  @@map("campuses")
+}
+
+/* ---------- Identidade & RBAC ---------- */
+
+model User {
+  id             String  @id // = Supabase auth.uid
+  organizationId String
+  email          String  @unique
+  name           String
+  avatarUrl      String?
+  isActive       Boolean @default(true)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  roles        UserRole[]
+  member       Member?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("users")
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  key         RoleKey @unique
+  label       String
+  permissions Json
+
+  users UserRole[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+/* ---------- Equipe & Instrumentos ---------- */
+
+model InstrumentCategory {
+  id        String                @id @default(cuid())
+  key       InstrumentCategoryKey @unique
+  label     String
+  sortOrder Int
+
+  instruments Instrument[]
+
+  @@map("instrument_categories")
+}
+
+model Instrument {
+  id             String  @id @default(cuid())
+  organizationId String
+  categoryId     String
+  name           String
+  isVocal        Boolean @default(false)
+  sortOrder      Int     @default(0)
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category     InstrumentCategory @relation(fields: [categoryId], references: [id])
+  members      MemberInstrument[]
+  assignments  Assignment[]
+
+  @@unique([organizationId, categoryId, name])
+  @@index([organizationId])
+  @@index([categoryId])
+  @@map("instruments")
+}
+
+model Member {
+  id             String     @id @default(cuid())
+  organizationId String
+  userId         String?    @unique
+  name           String
+  photoUrl       String?
+  phone          String?
+  email          String?
+  birthday       DateTime?
+  level          SkillLevel @default(INTERMEDIARIO)
+  notes          String?
+  isActive       Boolean    @default(true)
+
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User?              @relation(fields: [userId], references: [id])
+  instruments    MemberInstrument[]
+  availability   Availability[]
+  assignments    Assignment[]
+  ledServices    Service[]          @relation("WorshipLeader")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("members")
+}
+
+model MemberInstrument {
+  memberId     String
+  instrumentId String
+  isPrimary    Boolean    @default(false)
+  level        SkillLevel @default(INTERMEDIARIO)
+
+  member     Member     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  instrument Instrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+
+  @@id([memberId, instrumentId])
+  @@map("member_instruments")
+}
+
+model Availability {
+  id        String    @id @default(cuid())
+  memberId  String
+  date      DateTime?
+  weekday   Int?
+  available Boolean   @default(true)
+  reason    String?
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId])
+  @@map("availability")
+}
+
+/* ---------- CULTO (núcleo) ---------- */
+
+model ServiceType {
+  id             String @id @default(cuid())
+  organizationId String
+  name           String
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  services     Service[]
+
+  @@index([organizationId])
+  @@map("service_types")
+}
+
+model Service {
+  id              String        @id @default(cuid())
+  organizationId  String
+  campusId        String?
+  typeId          String?
+  status          ServiceStatus @default(PLANEJAMENTO)
+  date            DateTime
+  startTime       String?
+  theme           String?
+  pastor          String?
+  worshipLeaderId String?
+  notes           String?
+
+  organization  Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campus        Campus?          @relation(fields: [campusId], references: [id])
+  type          ServiceType?     @relation(fields: [typeId], references: [id])
+  worshipLeader Member?          @relation("WorshipLeader", fields: [worshipLeaderId], references: [id])
+
+  setlist     Setlist?
+  assignments Assignment[]
+  palette     ClothingPalette?
+  stageMap    StageMap?
+  notices     Notice[]
+  checklist   Checklist?
+  executions  SongExecution[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId, date])
+  @@index([campusId])
+  @@map("services")
+}
+
+/* ---------- Setlist ---------- */
+
+model Setlist {
+  id        String @id @default(cuid())
+  serviceId String @unique
+
+  service Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  items   SetlistItem[]
+
+  @@map("setlists")
+}
+
+model SetlistItem {
+  id          String  @id @default(cuid())
+  setlistId   String
+  songId      String
+  versionId   String?
+  position    Int
+  keyOverride String?
+  bpmOverride Int?
+  durationSec Int?
+  notes       String?
+
+  setlist Setlist      @relation(fields: [setlistId], references: [id], onDelete: Cascade)
+  song    Song         @relation(fields: [songId], references: [id])
+  version SongVersion? @relation(fields: [versionId], references: [id])
+
+  @@index([setlistId, position])
+  @@map("setlist_items")
+}
+
+/* ---------- Escala ---------- */
+
+model Assignment {
+  id              String           @id @default(cuid())
+  serviceId       String
+  memberId        String?
+  instrumentId    String
+  status          AssignmentStatus @default(CONVIDADO)
+  isLeader        Boolean          @default(false)
+  substituteForId String?
+  notes           String?
+  respondedAt     DateTime?
+
+  service    Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  member     Member?    @relation(fields: [memberId], references: [id])
+  instrument Instrument @relation(fields: [instrumentId], references: [id])
+
+  @@index([serviceId])
+  @@index([memberId])
+  @@map("assignments")
+}
+
+/* ---------- Figurino / Palco / Avisos / Checklist ---------- */
+
+model ClothingPalette {
+  id           String  @id @default(cuid())
+  serviceId    String  @unique
+  colors       Json
+  notes        String?
+  referenceUrl String?
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("clothing_palettes")
+}
+
+model StageMap {
+  id        String @id @default(cuid())
+  serviceId String @unique
+
+  service   Service         @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  positions StagePosition[]
+
+  @@map("stage_maps")
+}
+
+model StagePosition {
+  id           String  @id @default(cuid())
+  stageMapId   String
+  assignmentId String?
+  label        String?
+  x            Float
+  y            Float
+
+  stageMap StageMap @relation(fields: [stageMapId], references: [id], onDelete: Cascade)
+
+  @@index([stageMapId])
+  @@map("stage_positions")
+}
+
+model Notice {
+  id        String  @id @default(cuid())
+  serviceId String
+  title     String
+  body      String?
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@map("notices")
+}
+
+model Checklist {
+  id        String @id @default(cuid())
+  serviceId String @unique
+
+  service Service         @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  items   ChecklistItem[]
+
+  @@map("checklists")
+}
+
+model ChecklistItem {
+  id          String  @id @default(cuid())
+  checklistId String
+  label       String
+  isDone      Boolean @default(false)
+
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@map("checklist_items")
+}
+
+/* ---------- Biblioteca Musical ---------- */
+
+model Song {
+  id             String  @id @default(cuid())
+  organizationId String
+  name           String
+  artist         String?
+  composer       String?
+  ccli           String?
+  originalKey    String?
+  bpm            Int?
+  durationSec    Int?
+  language       String?
+  isInLibrary    Boolean @default(true)
+
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  versions       SongVersion[]
+  tags           SongTag[]
+  setlistItems   SetlistItem[]
+  executions     SongExecution[]
+  implementation SongImplementation?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+  @@map("songs")
+}
+
+model SongVersion {
+  id     String  @id @default(cuid())
+  songId String
+  label  String
+  key    String?
+  bpm    Int?
+  notes  String?
+
+  song         Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
+  files        SongFile[]
+  setlistItems SetlistItem[]
+
+  @@index([songId])
+  @@map("song_versions")
+}
+
+model SongFile {
+  id          String   @id @default(cuid())
+  versionId   String
+  kind        FileKind
+  storagePath String
+  name        String
+  sizeBytes   Int?
+  mimeType    String?
+
+  version SongVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@map("song_files")
+}
+
+model Tag {
+  id             String @id @default(cuid())
+  organizationId String
+  name           String
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  songs        SongTag[]
+
+  @@unique([organizationId, name])
+  @@map("tags")
+}
+
+model SongTag {
+  songId String
+  tagId  String
+
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([songId, tagId])
+  @@map("song_tags")
+}
+
+/* ---------- Implantação (pipeline) ---------- */
+
+model SongImplementation {
+  id           String              @id @default(cuid())
+  songId       String              @unique
+  stage        ImplementationStage @default(EM_ANALISE)
+  position     Int                 @default(0)
+  assignedToId String?
+  notes        String?
+  movedAt      DateTime            @default(now())
+
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([stage])
+  @@map("song_implementations")
+}
+
+/* ---------- Execuções (relatórios) ---------- */
+
+model SongExecution {
+  id             String   @id @default(cuid())
+  organizationId String
+  songId         String
+  serviceId      String?
+  playedAt       DateTime
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  song         Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
+  service      Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, playedAt])
+  @@index([songId])
+  @@map("song_executions")
+}
+
+/* ---------- Comunicação ---------- */
+
+model Announcement {
+  id             String    @id @default(cuid())
+  organizationId String
+  title          String
+  body           String?
+  audience       Json
+  publishedAt    DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("announcements")
+}

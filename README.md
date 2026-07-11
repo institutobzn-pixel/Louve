@@ -10,11 +10,25 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 1 — Arquitetura (em aprovação)**
+🟣 **Fase 0 — Fundação (entregue, em validação)** · Arquitetura aprovada ✅
 
-Conforme a metodologia definida no prompt-mestre, **nenhum código de aplicação foi escrito
-ainda**. Esta entrega contém a **especificação completa de arquitetura**. A implementação do
-primeiro módulo só inicia após aprovação.
+O esqueleto executável está pronto: Next.js + Design System (tokens violeta, dark/light),
+shell da aplicação com o menu principal, schema Prisma completo, seeds (papéis, categorias e
+instrumentos), integração Supabase (auth SSR + middleware) e CI. A **Fase 1 (Módulo Culto)**
+inicia após validação.
+
+### Rodando localmente
+
+```bash
+npm install
+cp .env.example .env   # preencha com as credenciais do seu projeto Supabase
+npm run db:migrate     # cria as tabelas
+npm run db:seed        # papéis + categorias de instrumento
+npm run dev            # http://localhost:3000
+```
+
+> Sem Supabase configurado o app também roda (`npm run dev`) — o shell e as telas
+> funcionam; apenas login e dados reais dependem das credenciais.
 
 ## Documentação
 
