@@ -25,15 +25,21 @@ interface ChecklistItemView {
 interface ServiceTabsProps {
   /** Conteúdo da aba Informações (formulário RSC-hidratado). */
   infoContent: React.ReactNode;
+  /** Conteúdo da aba Setlist (board drag-and-drop). */
+  setlistContent: React.ReactNode;
   checklistItems: ChecklistItemView[];
 }
 
 /**
  * Abas da página exclusiva do culto (docs/06-navegacao-fluxos.md).
- * Fase 1: Informações funcional; Checklist com itens semeados (leitura);
+ * Informações e Setlist funcionais; Checklist com itens semeados (leitura);
  * demais abas chegam nas próximas fases.
  */
-export function ServiceTabs({ infoContent, checklistItems }: ServiceTabsProps) {
+export function ServiceTabs({
+  infoContent,
+  setlistContent,
+  checklistItems,
+}: ServiceTabsProps) {
   return (
     <Tabs defaultValue="informacoes">
       <div className="overflow-x-auto pb-1">
@@ -71,13 +77,7 @@ export function ServiceTabs({ infoContent, checklistItems }: ServiceTabsProps) {
         </Card>
       </TabsContent>
 
-      <TabsContent value="setlist">
-        <EmptyState
-          icon={ListMusic}
-          title="Setlist do culto"
-          description="Monte o repertório com drag-and-drop, versões e tons — chega na Fase 2."
-        />
-      </TabsContent>
+      <TabsContent value="setlist">{setlistContent}</TabsContent>
 
       <TabsContent value="escala">
         <EmptyState

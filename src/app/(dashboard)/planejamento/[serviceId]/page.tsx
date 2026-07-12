@@ -8,6 +8,7 @@ import { ServiceActionsMenu } from "@/features/service/components/service-action
 import { ServiceInfoForm } from "@/features/service/components/service-info-form";
 import { ServiceStatusPill } from "@/features/service/components/service-status-pill";
 import { ServiceTabs } from "@/features/service/components/service-tabs";
+import { SetlistBoard } from "@/features/setlist/components/setlist-board";
 import {
   getServiceDetail,
   getServiceFormOptions,
@@ -79,6 +80,32 @@ export default async function CultoPage({ params }: PageProps) {
 
       <ServiceTabs
         checklistItems={service.checklist?.items ?? []}
+        setlistContent={
+          service.setlist ? (
+            <SetlistBoard
+              serviceId={service.id}
+              setlistId={service.setlist.id}
+              items={service.setlist.items.map((item) => ({
+                id: item.id,
+                keyOverride: item.keyOverride,
+                bpmOverride: item.bpmOverride,
+                durationSec: item.durationSec,
+                notes: item.notes,
+                versionId: item.versionId,
+                versionLabel: item.version?.label ?? null,
+                song: {
+                  id: item.song.id,
+                  name: item.song.name,
+                  artist: item.song.artist,
+                  versions: item.song.versions.map((v) => ({
+                    id: v.id,
+                    label: v.label,
+                  })),
+                },
+              }))}
+            />
+          ) : null
+        }
         infoContent={
           <ServiceInfoForm
             serviceId={service.id}

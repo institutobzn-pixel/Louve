@@ -10,13 +10,13 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 1 — Módulo Culto (entregue, em validação)** · Fase 0 e Arquitetura aprovadas ✅
+🟣 **Fase 2 — Setlist (entregue, em validação)** · Fases 0–1 e Arquitetura aprovadas ✅
 
-O coração do sistema está funcionando: agenda de cultos (lista por mês + calendário),
-criação pelo diálogo "Planejar culto", página exclusiva do culto com as 8 abas
-(Informações funcional, com edição completa; Checklist com os itens padrão; demais abas
-chegam nas próximas fases), status, duplicação e exclusão. A **Fase 2 (Setlist)** inicia
-após validação.
+A aba Setlist da página do culto está funcional: adicionar músicas da **Biblioteca
+Oficial** ou de **Músicas em Implantação**, cadastro rápido de música, reordenação por
+**drag-and-drop** (mouse e teclado, com atualização otimista), edição por item (versão,
+tom, BPM, duração, observações — sem alterar a música original), remoção e duração total
+do repertório. A **Fase 3 (Equipe + Biblioteca completa)** inicia após validação.
 
 ### Rodando localmente
 

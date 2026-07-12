@@ -123,7 +123,14 @@ export async function getServiceById(
       campus: true,
       worshipLeader: true,
       checklist: { include: { items: true } },
-      setlist: { include: { items: true } },
+      setlist: {
+        include: {
+          items: {
+            include: { song: { include: { versions: true } }, version: true },
+            orderBy: { position: "asc" },
+          },
+        },
+      },
       assignments: true,
       notices: true,
     },
