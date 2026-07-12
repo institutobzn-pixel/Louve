@@ -49,7 +49,7 @@ export function Sidebar() {
 
       <div className="border-t p-4">
         <p className="text-xs text-muted-foreground">
-          Fase 6 · Facetas do Culto
+          Fase 7 · Implantação
         </p>
       </div>
     </aside>

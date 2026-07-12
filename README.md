@@ -10,14 +10,14 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 6 — Facetas do Culto (entregue, em validação)** · Fases 0–5 aprovadas ✅
+🟣 **Fase 7 — Implantação de Músicas (entregue, em validação)** · Fases 0–6 aprovadas ✅
 
-As quatro abas restantes da página do culto ficaram funcionais: **Checklist** com itens
-**automáticos** (Setlist, Escala, Paleta, Mapa e Visualizações refletem o estado real, com
-os manuais Material/Passagem de som livres), **Avisos** (criar/editar/excluir — aparecem no
-app do músico), **Paleta de Roupas** (cores com seletor, observações e referência visual) e
-**Mapa de Palco** (posicionamento gráfico dos músicos e rótulos livres por **arraste**, com
-salvamento automático). A **Fase 7 (Implantação de Músicas)** inicia após validação.
+Pipeline **kanban** em `/implantacao` com as 6 etapas do prompt (Em análise → Aprovada → Em
+estudo → Ensaiando → Pronta → Implantada) e **arrastar-e-soltar** entre colunas (dnd-kit,
+atualização otimista). Regra de negócio central: ao soltar em **Implantada**, a música
+**migra automaticamente para a Biblioteca Oficial preservando todo o histórico** (versões e
+arquivos) e passa a aparecer no seletor do setlist. Cadastro rápido de música no pipeline.
+A **Fase 8 (Execução & Relatórios)** inicia após validação.
 
 ### Rodando localmente
 
