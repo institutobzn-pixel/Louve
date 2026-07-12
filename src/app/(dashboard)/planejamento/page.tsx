@@ -1,20 +1,37 @@
 import type { Metadata } from "next";
-import { CalendarRange } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/page-header";
-import { EmptyState } from "@/components/shared/empty-state";
+import { CreateServiceDialog } from "@/features/service/components/create-service-dialog";
+import { PlanningView } from "@/features/service/components/planning-view";
+import {
+  getServiceFormOptions,
+  getServicesForPlanning,
+} from "@/features/service/queries";
 
 export const metadata: Metadata = { title: "Planejamento" };
+export const dynamic = "force-dynamic";
 
-export default function Page() {
+export default async function PlanejamentoPage() {
+  const [services, options] = await Promise.all([
+    getServicesForPlanning(),
+    getServiceFormOptions(),
+  ]);
+
+  const createButton = (
+    <CreateServiceDialog
+      typeOptions={options.types}
+      memberOptions={options.members}
+    />
+  );
+
   return (
     <>
-      <PageHeader title="Planejamento" description="Planeje cada culto de ponta a ponta: informações, setlist, escala, ensaio e checklist." />
-      <EmptyState
-        icon={CalendarRange}
-        title="Módulo em construção"
-        description="Chega na Fase 1 — é o coração do sistema."
+      <PageHeader
+        title="Planejamento"
+        description="Planeje cada culto de ponta a ponta: informações, setlist, escala, ensaio e checklist."
+        actions={createButton}
       />
+      <PlanningView services={services} createButton={createButton} />
     </>
   );
 }

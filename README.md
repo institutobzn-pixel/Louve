@@ -10,12 +10,13 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 0 — Fundação (entregue, em validação)** · Arquitetura aprovada ✅
+🟣 **Fase 1 — Módulo Culto (entregue, em validação)** · Fase 0 e Arquitetura aprovadas ✅
 
-O esqueleto executável está pronto: Next.js + Design System (tokens violeta, dark/light),
-shell da aplicação com o menu principal, schema Prisma completo, seeds (papéis, categorias e
-instrumentos), integração Supabase (auth SSR + middleware) e CI. A **Fase 1 (Módulo Culto)**
-inicia após validação.
+O coração do sistema está funcionando: agenda de cultos (lista por mês + calendário),
+criação pelo diálogo "Planejar culto", página exclusiva do culto com as 8 abas
+(Informações funcional, com edição completa; Checklist com os itens padrão; demais abas
+chegam nas próximas fases), status, duplicação e exclusão. A **Fase 2 (Setlist)** inicia
+após validação.
 
 ### Rodando localmente
 

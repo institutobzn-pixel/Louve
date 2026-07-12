@@ -74,3 +74,63 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
+
+/* FullCalendar — alinhado aos tokens do Design System (dark/light) */
+.service-calendar {
+  --fc-border-color: hsl(var(--border));
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: hsl(var(--muted));
+  --fc-today-bg-color: hsl(var(--accent) / 0.5);
+  --fc-event-bg-color: hsl(var(--primary));
+  --fc-event-border-color: hsl(var(--primary));
+  --fc-event-text-color: hsl(var(--primary-foreground));
+  --fc-button-bg-color: hsl(var(--muted));
+  --fc-button-border-color: hsl(var(--border));
+  --fc-button-text-color: hsl(var(--foreground));
+  --fc-button-hover-bg-color: hsl(var(--accent));
+  --fc-button-hover-border-color: hsl(var(--border));
+  --fc-button-active-bg-color: hsl(var(--primary));
+  --fc-button-active-border-color: hsl(var(--primary));
+}
+
+.service-calendar .fc {
+  font-size: 0.875rem;
+}
+
+.service-calendar .fc .fc-toolbar-title {
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.service-calendar .fc .fc-button {
+  border-radius: calc(var(--radius) - 4px);
+  box-shadow: none;
+  font-size: 0.8125rem;
+  padding: 0.3rem 0.7rem;
+}
+
+.service-calendar .fc .fc-button:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.service-calendar .fc .fc-daygrid-day-number,
+.service-calendar .fc .fc-col-header-cell-cushion {
+  color: hsl(var(--foreground));
+  text-decoration: none;
+}
+
+.service-calendar .fc .fc-col-header-cell-cushion {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  text-transform: capitalize;
+}
+
+.service-calendar .fc .fc-event {
+  border-radius: calc(var(--radius) - 6px);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 1px 4px;
+}
