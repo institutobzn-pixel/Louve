@@ -9,6 +9,8 @@ import { ServiceInfoForm } from "@/features/service/components/service-info-form
 import { ServiceStatusPill } from "@/features/service/components/service-status-pill";
 import { ServiceTabs } from "@/features/service/components/service-tabs";
 import { SetlistBoard } from "@/features/setlist/components/setlist-board";
+import { ScheduleBoard } from "@/features/schedule/components/schedule-board";
+import { getInstrumentOptions } from "@/features/team/queries";
 import {
   getServiceDetail,
   getServiceFormOptions,
@@ -25,9 +27,10 @@ interface PageProps {
 export default async function CultoPage({ params }: PageProps) {
   const { serviceId } = await params;
 
-  const [service, options] = await Promise.all([
+  const [service, options, instrumentCategories] = await Promise.all([
     getServiceDetail(serviceId),
     getServiceFormOptions(),
+    getInstrumentOptions(),
   ]);
 
   if (!service) notFound();
@@ -80,6 +83,22 @@ export default async function CultoPage({ params }: PageProps) {
 
       <ServiceTabs
         checklistItems={service.checklist?.items ?? []}
+        scheduleContent={
+          <ScheduleBoard
+            serviceId={service.id}
+            categories={instrumentCategories}
+            assignments={service.assignments.map((assignment) => ({
+              id: assignment.id,
+              memberId: assignment.memberId,
+              memberName: assignment.member?.name ?? null,
+              instrumentId: assignment.instrumentId,
+              instrumentName: assignment.instrument.name,
+              categoryKey: assignment.instrument.category.key,
+              status: assignment.status,
+              isLeader: assignment.isLeader,
+            }))}
+          />
+        }
         setlistContent={
           service.setlist ? (
             <SetlistBoard

@@ -10,15 +10,16 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 3 — Equipe & Biblioteca (entregue, em validação)** · Fases 0–2 e Arquitetura aprovadas ✅
+🟣 **Fase 4 — Escala (entregue, em validação)** · Fases 0–3 e Arquitetura aprovadas ✅
 
-**Equipe:** cadastro completo do músico (contato, aniversário, nível, observações),
-instrumentos principais (★) e secundários por categoria, registro de indisponibilidades
-(data pontual ou dia da semana) e histórico de escalas. **Biblioteca:** página completa da
-música (compositor, CCLI, idioma…), **versões** (tom/BPM/observações) e **arquivos** com
-upload real (playback, partitura, multitrack, guia vocal…) e **player com waveform**
-(WaveSurfer). Storage com driver duplo: Supabase Storage em produção, disco local em dev.
-A **Fase 4 (Escala + sugestões de substituição)** inicia após validação.
+A aba Escala do culto está funcional, organizada pelas **9 categorias** do prompt
+(Liderança, Voz, Ritmo, Harmonia, Cordas, Sopros Madeira, Sopros Metais, Percussão
+Orquestral, Produção). O seletor de músicos mostra **sugestões ranqueadas** por
+disponibilidade × instrumento principal × nível × carga recente (90 dias), com selo de
+disponível/indisponível. Status por escalado (Convidado → Confirmado/Recusou) e fluxo de
+**substituição automática sugerida** quando alguém recusa — o titular fica marcado como
+Substituído e sai da escala ativa. A **Fase 5 (App do Músico + Modo Ensaio)** inicia após
+validação.
 
 ### Rodando localmente
 

@@ -27,6 +27,8 @@ interface ServiceTabsProps {
   infoContent: React.ReactNode;
   /** Conteúdo da aba Setlist (board drag-and-drop). */
   setlistContent: React.ReactNode;
+  /** Conteúdo da aba Escala (board por categorias). */
+  scheduleContent: React.ReactNode;
   checklistItems: ChecklistItemView[];
 }
 
@@ -38,6 +40,7 @@ interface ServiceTabsProps {
 export function ServiceTabs({
   infoContent,
   setlistContent,
+  scheduleContent,
   checklistItems,
 }: ServiceTabsProps) {
   return (
@@ -77,13 +80,7 @@ export function ServiceTabs({
         </Card>
       </TabsContent>
 
-      <TabsContent value="escala">
-        <EmptyState
-          icon={Users}
-          title="Escala por categorias"
-          description="Liderança, Voz, Ritmo, Harmonia, Cordas, Sopros, Percussão e Produção — chega na Fase 4."
-        />
-      </TabsContent>
+      <TabsContent value="escala">{scheduleContent}</TabsContent>
 
       <TabsContent value="setlist">{setlistContent}</TabsContent>
 

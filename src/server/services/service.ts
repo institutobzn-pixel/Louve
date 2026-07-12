@@ -131,7 +131,12 @@ export async function getServiceById(
           },
         },
       },
-      assignments: true,
+      assignments: {
+        include: {
+          member: true,
+          instrument: { include: { category: true } },
+        },
+      },
       notices: true,
     },
   });
