@@ -63,7 +63,7 @@ export async function quickCreateSongAction(
 
   try {
     const org = await getCurrentOrganization();
-    const song = await songService.createQuickSong(org.id, {
+    const song = await songService.createSong(org.id, {
       name: parsed.data.name.trim(),
       artist: parsed.data.artist?.trim() || null,
       originalKey: parsed.data.originalKey?.trim() || null,

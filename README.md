@@ -10,13 +10,15 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 2 — Setlist (entregue, em validação)** · Fases 0–1 e Arquitetura aprovadas ✅
+🟣 **Fase 3 — Equipe & Biblioteca (entregue, em validação)** · Fases 0–2 e Arquitetura aprovadas ✅
 
-A aba Setlist da página do culto está funcional: adicionar músicas da **Biblioteca
-Oficial** ou de **Músicas em Implantação**, cadastro rápido de música, reordenação por
-**drag-and-drop** (mouse e teclado, com atualização otimista), edição por item (versão,
-tom, BPM, duração, observações — sem alterar a música original), remoção e duração total
-do repertório. A **Fase 3 (Equipe + Biblioteca completa)** inicia após validação.
+**Equipe:** cadastro completo do músico (contato, aniversário, nível, observações),
+instrumentos principais (★) e secundários por categoria, registro de indisponibilidades
+(data pontual ou dia da semana) e histórico de escalas. **Biblioteca:** página completa da
+música (compositor, CCLI, idioma…), **versões** (tom/BPM/observações) e **arquivos** com
+upload real (playback, partitura, multitrack, guia vocal…) e **player com waveform**
+(WaveSurfer). Storage com driver duplo: Supabase Storage em produção, disco local em dev.
+A **Fase 4 (Escala + sugestões de substituição)** inicia após validação.
 
 ### Rodando localmente
 

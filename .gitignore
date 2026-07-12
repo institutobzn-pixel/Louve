@@ -28,6 +28,9 @@ supabase/.temp
 # Prisma
 prisma/*.db
 
+# Uploads locais (driver de dev)
+.uploads/
+
 # Testing
 /coverage
 /playwright-report
