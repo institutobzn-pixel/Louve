@@ -1,5 +1,3 @@
-import type { AssignmentStatus } from "@prisma/client";
-
 import { prisma } from "@/server/db";
 
 /**
@@ -65,19 +63,23 @@ export async function getMyServiceDetail(
   return assignment;
 }
 
-/** Confirmação de presença — o músico só responde pela própria escala. */
-export async function respondToAssignment(
+/**
+ * Marca as escalas de um culto como vistas pelo músico — a notificação
+ * "Nova escala" some do app e o líder vê o ✓✓ na gestão.
+ */
+export async function markAssignmentsSeen(
   organizationId: string,
   memberId: string,
-  assignmentId: string,
-  status: Extract<AssignmentStatus, "CONFIRMADO" | "RECUSADO">
+  serviceId: string
 ) {
-  await prisma.assignment.findFirstOrThrow({
-    where: { id: assignmentId, memberId, service: { organizationId } },
-  });
-  return prisma.assignment.update({
-    where: { id: assignmentId },
-    data: { status, respondedAt: new Date() },
+  return prisma.assignment.updateMany({
+    where: {
+      memberId,
+      serviceId,
+      seenAt: null,
+      service: { organizationId },
+    },
+    data: { seenAt: new Date() },
   });
 }
 

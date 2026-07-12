@@ -32,7 +32,7 @@ export default async function MinhaAgendaPage() {
     (assignment) => new Date(assignment.service.date) >= today
   );
 
-  const pending = upcoming.filter((a) => a.status === "CONVIDADO").length;
+  const unseen = upcoming.filter((a) => a.seenAt === null).length;
 
   return (
     <>
@@ -43,9 +43,9 @@ export default async function MinhaAgendaPage() {
         <p className="mt-1 text-sm text-muted-foreground">
           {upcoming.length === 0
             ? "Você não tem cultos agendados."
-            : pending > 0
-              ? `Você tem ${pending} convite${pending === 1 ? "" : "s"} aguardando resposta.`
-              : "Tudo confirmado por aqui."}
+            : unseen > 0
+              ? `Você foi escalado(a) em ${unseen} novo${unseen === 1 ? "" : "s"} culto${unseen === 1 ? "" : "s"} — toque para ver os detalhes.`
+              : "Sua agenda está em dia."}
         </p>
       </div>
 

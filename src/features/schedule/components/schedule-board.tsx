@@ -2,28 +2,26 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Plus, UserRoundX, UsersRound, X } from "lucide-react";
+import {
+  CalendarX2,
+  CheckCheck,
+  Plus,
+  UserRoundX,
+  UsersRound,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  removeAssignmentAction,
-  updateAssignmentStatusAction,
-} from "../actions";
-import {
-  assignmentStatusConfig,
-  type AssignmentView,
-  type ScheduleCategoryView,
-} from "../types";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { removeAssignmentAction } from "../actions";
+import type { AssignmentView, ScheduleCategoryView } from "../types";
 import {
   MemberPickerDialog,
   type PickerState,
@@ -32,6 +30,7 @@ import {
 interface ScheduleBoardProps {
   serviceId: string;
   categories: ScheduleCategoryView[];
+  /** Apenas escalas ativas (substituídos ficam no histórico). */
   assignments: AssignmentView[];
 }
 
@@ -43,7 +42,11 @@ function initials(name: string) {
     .join("");
 }
 
-/** Escala do culto organizada pelas categorias do prompt-mestre. */
+/**
+ * Escala do culto organizada pelas categorias do prompt-mestre.
+ * Modelo sem convite: escalar já efetiva; o músico é notificado no app.
+ * Indisponibilidade aparece como aviso, mas não impede a escalação.
+ */
 export function ScheduleBoard({
   serviceId,
   categories,
@@ -59,24 +62,7 @@ export function ScheduleBoard({
     byCategory.set(assignment.categoryKey, list);
   }
 
-  const confirmed = assignments.filter(
-    (a) => a.status === "CONFIRMADO"
-  ).length;
-  const active = assignments.filter((a) => a.status !== "SUBSTITUIDO").length;
-
-  async function handleStatus(assignment: AssignmentView, status: string) {
-    const result = await updateAssignmentStatusAction(
-      serviceId,
-      assignment.id,
-      status
-    );
-    if (result.ok) {
-      toast.success("Status atualizado.");
-      router.refresh();
-    } else {
-      toast.error(result.error);
-    }
-  }
+  const unavailable = assignments.filter((a) => a.unavailableReason).length;
 
   async function handleRemove(assignment: AssignmentView) {
     const result = await removeAssignmentAction(serviceId, assignment.id);
@@ -90,16 +76,21 @@ export function ScheduleBoard({
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <UsersRound className="h-4 w-4" />
-        {active} escalado{active === 1 ? "" : "s"} · {confirmed} confirmado
-        {confirmed === 1 ? "" : "s"}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <UsersRound className="h-4 w-4" />
+          {assignments.length} escalado{assignments.length === 1 ? "" : "s"}
+        </span>
+        {unavailable > 0 ? (
+          <span className="inline-flex items-center gap-1.5 text-warning">
+            <CalendarX2 className="h-4 w-4" />
+            {unavailable} com indisponibilidade
+          </span>
+        ) : null}
       </div>
 
       {categories.map((category) => {
-        const items = (byCategory.get(category.key) ?? []).filter(
-          (a) => a.status !== "SUBSTITUIDO"
-        );
+        const items = byCategory.get(category.key) ?? [];
         return (
           <section key={category.key}>
             <div className="mb-2 flex items-center justify-between">
@@ -122,7 +113,6 @@ export function ScheduleBoard({
             ) : (
               <ul className="space-y-2">
                 {items.map((assignment) => {
-                  const status = assignmentStatusConfig[assignment.status];
                   const memberName = assignment.memberName;
                   return (
                     <li
@@ -131,41 +121,53 @@ export function ScheduleBoard({
                     >
                       <Avatar className="h-9 w-9">
                         <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">
-                          {assignment.memberName
-                            ? initials(assignment.memberName)
-                            : "?"}
+                          {memberName ? initials(memberName) : "?"}
                         </AvatarFallback>
                       </Avatar>
 
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">
-                          {assignment.memberName ?? "Vaga em aberto"}
+                          {memberName ?? "Vaga em aberto"}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {assignment.instrumentName}
                         </p>
                       </div>
 
-                      <Badge variant={status.variant}>{status.label}</Badge>
+                      {assignment.unavailableReason ? (
+                        <Badge variant="warning" className="gap-1">
+                          <CalendarX2 className="h-3 w-3" />
+                          {assignment.unavailableReason}
+                        </Badge>
+                      ) : null}
 
-                      <Select
-                        value={assignment.status}
-                        onValueChange={(v) => handleStatus(assignment, v)}
-                      >
-                        <SelectTrigger
-                          className="h-8 w-36 text-xs"
-                          aria-label={`Status de ${assignment.memberName ?? "vaga"}`}
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="CONVIDADO">Convidado</SelectItem>
-                          <SelectItem value="CONFIRMADO">Confirmado</SelectItem>
-                          <SelectItem value="RECUSADO">Recusou</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {memberName ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className={
+                                assignment.seen
+                                  ? "text-success"
+                                  : "text-muted-foreground/50"
+                              }
+                              aria-label={
+                                assignment.seen
+                                  ? "Visualizou a escala"
+                                  : "Ainda não viu a escala"
+                              }
+                            >
+                              <CheckCheck className="h-4 w-4" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {assignment.seen
+                              ? "Visualizou a escala no app"
+                              : "Ainda não viu a escala"}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : null}
 
-                      {assignment.status === "RECUSADO" && memberName ? (
+                      {memberName ? (
                         <Button
                           variant="outline"
                           size="sm"

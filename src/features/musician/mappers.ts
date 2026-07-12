@@ -19,6 +19,6 @@ export function toMyServiceCardData(
     theme: assignment.service.theme,
     leaderName: assignment.service.worshipLeader?.name ?? null,
     instrumentName: assignment.instrument.name,
-    status: assignment.status,
+    isNew: assignment.seenAt === null,
   };
 }

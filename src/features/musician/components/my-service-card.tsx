@@ -1,12 +1,9 @@
 import Link from "next/link";
-import { Clock, Mic2 } from "lucide-react";
+import { Clock, Mic2, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { assignmentStatusConfig } from "@/features/schedule/types";
 import { formatDayOfMonth, formatWeekday } from "@/lib/format";
-import type { AssignmentStatus } from "@prisma/client";
-import { PresenceButtons } from "./presence-buttons";
 
 export interface MyServiceCardData {
   assignmentId: string;
@@ -18,19 +15,15 @@ export interface MyServiceCardData {
   theme: string | null;
   leaderName: string | null;
   instrumentName: string;
-  status: AssignmentStatus;
+  /** Escala ainda não visualizada — notificação "Nova escala". */
+  isNew: boolean;
 }
 
 /** Cartão de culto na visão do músico — usado na Agenda e em Meus Cultos. */
 export function MyServiceCard({ data }: { data: MyServiceCardData }) {
-  const status = assignmentStatusConfig[data.status];
-
   return (
-    <Card className="space-y-3 p-4 animate-fade-in-up">
-      <Link
-        href={`/musico/cultos/${data.serviceId}`}
-        className="flex items-center gap-4"
-      >
+    <Link href={`/musico/cultos/${data.serviceId}`} className="block">
+      <Card className="flex items-center gap-4 p-4 transition-colors hover:border-primary/40 hover:bg-muted/40 animate-fade-in-up">
         <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-accent">
           <span className="text-[11px] font-medium uppercase text-accent-foreground/70">
             {formatWeekday(data.date)}
@@ -45,7 +38,11 @@ export function MyServiceCard({ data }: { data: MyServiceCardData }) {
             <span className="truncate font-medium">
               {data.typeName ?? "Culto"}
             </span>
-            <Badge variant={status.variant}>{status.label}</Badge>
+            {data.isNew ? (
+              <Badge className="gap-1">
+                <Sparkles className="h-3 w-3" /> Nova escala
+              </Badge>
+            ) : null}
           </div>
           <p className="mt-0.5 text-sm text-primary">{data.instrumentName}</p>
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -62,14 +59,7 @@ export function MyServiceCard({ data }: { data: MyServiceCardData }) {
             {data.theme ? <span>“{data.theme}”</span> : null}
           </div>
         </div>
-      </Link>
-
-      {data.status === "CONVIDADO" ? (
-        <PresenceButtons
-          memberId={data.memberId}
-          assignmentId={data.assignmentId}
-        />
-      ) : null}
-    </Card>
+      </Card>
+    </Link>
   );
 }

@@ -56,7 +56,8 @@ arquitetura.
 ## Fase 5 — App do Músico + Modo Ensaio Inteligente
 
 - App `(musico)`: Minha Agenda, Meus Cultos, Minha Escala, Perfil, Avisos.
-- **Confirmar presença** e **atualizar disponibilidade** (refletem no checklist da gestão).
+- **Notificação de nova escala** (sem convite: escalar já efetiva; o app avisa o músico e a
+  gestão vê quem visualizou) e **atualizar disponibilidade**.
 - **Modo Ensaio** por função (violinista/vocalista/baterista… conteúdo específico). Visão
   restrita reforçada por RLS.
 

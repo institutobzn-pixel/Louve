@@ -51,7 +51,9 @@ restrita (apenas próprio).
 O `MUSICO` acessa **somente** o app `(musico)`:
 
 - Minha Agenda · Meus Cultos · Minha Escala · Modo Ensaio · Biblioteca Musical · Avisos · Perfil
-- Ações: **Confirmar presença**, **Atualizar disponibilidade**.
+- Ações: **visualizar a escala** (notificação "Nova escala" ao abrir o app) e **atualizar a
+  própria disponibilidade** — a indisponibilidade aparece para quem monta a escala, sem
+  bloquear a escalação.
 - **Nada além disso** — regra reforçada por RLS (só lê `assignments` onde `member.userId = auth.uid`)
   e por roteamento (middleware redireciona `MUSICO` para `(musico)`).
 

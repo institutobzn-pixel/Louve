@@ -133,7 +133,7 @@ export async function getServiceById(
       },
       assignments: {
         include: {
-          member: true,
+          member: { include: { availability: true } },
           instrument: { include: { category: true } },
         },
       },

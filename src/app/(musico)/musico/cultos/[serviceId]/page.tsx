@@ -18,12 +18,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PresenceButtons } from "@/features/musician/components/presence-buttons";
-import { assignmentStatusConfig } from "@/features/schedule/types";
 import { formatDateLong, formatDuration } from "@/lib/format";
 import { getCurrentMember } from "@/server/member-context";
 import { getCurrentOrganization } from "@/server/org";
-import { getMyServiceDetail } from "@/server/services/musician";
+import {
+  getMyServiceDetail,
+  markAssignmentsSeen,
+} from "@/server/services/musician";
 
 export const metadata: Metadata = { title: "Meu Culto" };
 export const dynamic = "force-dynamic";
@@ -41,8 +42,13 @@ export default async function MeuCultoPage({ params }: PageProps) {
   const assignment = await getMyServiceDetail(org.id, member.id, serviceId);
   if (!assignment) notFound();
 
+  // Abrir o culto marca a escala como vista — a notificação some
+  // e o líder vê o ✓✓ na gestão.
+  if (assignment.seenAt === null) {
+    await markAssignmentsSeen(org.id, member.id, serviceId);
+  }
+
   const service = assignment.service;
-  const status = assignmentStatusConfig[assignment.status];
   const setlistItems = service.setlist?.items ?? [];
 
   return (
@@ -58,7 +64,6 @@ export default async function MeuCultoPage({ params }: PageProps) {
           <h1 className="text-2xl font-semibold tracking-tight">
             {service.type?.name ?? "Culto"}
           </h1>
-          <Badge variant={status.variant}>{status.label}</Badge>
         </div>
         <p className="mt-1 capitalize text-muted-foreground">
           {formatDateLong(new Date(service.date))}
@@ -100,12 +105,13 @@ export default async function MeuCultoPage({ params }: PageProps) {
               </span>{" "}
               ({assignment.instrument.category.label}).
             </p>
-            {assignment.status === "CONVIDADO" ? (
-              <PresenceButtons
-                memberId={member.id}
-                assignmentId={assignment.id}
-              />
-            ) : null}
+            <p className="text-xs text-muted-foreground">
+              Não vai poder participar? Registre sua indisponibilidade no{" "}
+              <Link href="/musico/perfil" className="text-primary underline-offset-2 hover:underline">
+                Perfil
+              </Link>{" "}
+              e avise a liderança.
+            </p>
             <Button asChild>
               <Link href={`/musico/ensaio/${service.id}`}>
                 <Music4 /> Abrir Modo Ensaio

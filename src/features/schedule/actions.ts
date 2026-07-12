@@ -17,13 +17,6 @@ const assignSchema = z.object({
   substituteForId: z.string().nullable().optional(),
 });
 
-const statusSchema = z.enum([
-  "CONVIDADO",
-  "CONFIRMADO",
-  "RECUSADO",
-  "SUBSTITUIDO",
-]);
-
 export async function assignMemberAction(
   serviceId: string,
   values: z.infer<typeof assignSchema>
@@ -46,28 +39,6 @@ export async function assignMemberAction(
           ? e.message
           : "Não foi possível escalar o músico.",
     };
-  }
-}
-
-export async function updateAssignmentStatusAction(
-  serviceId: string,
-  assignmentId: string,
-  status: string
-): Promise<ActionResult> {
-  const parsed = statusSchema.safeParse(status);
-  if (!parsed.success) return { ok: false, error: "Status inválido" };
-  try {
-    const org = await getCurrentOrganization();
-    await scheduleService.updateAssignmentStatus(
-      org.id,
-      assignmentId,
-      parsed.data
-    );
-    revalidatePath(`/planejamento/${serviceId}`);
-    return { ok: true, data: undefined };
-  } catch (e) {
-    console.error("updateAssignmentStatusAction", e);
-    return { ok: false, error: "Não foi possível atualizar o status." };
   }
 }
 

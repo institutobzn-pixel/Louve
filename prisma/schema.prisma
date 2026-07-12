@@ -44,9 +44,7 @@ enum SkillLevel {
 }
 
 enum AssignmentStatus {
-  CONVIDADO
-  CONFIRMADO
-  RECUSADO
+  ESCALADO
   SUBSTITUIDO
 }
 
@@ -330,11 +328,12 @@ model Assignment {
   serviceId       String
   memberId        String?
   instrumentId    String
-  status          AssignmentStatus @default(CONVIDADO)
+  status          AssignmentStatus @default(ESCALADO)
   isLeader        Boolean          @default(false)
   substituteForId String?
   notes           String?
-  respondedAt     DateTime?
+  /// Quando o músico visualizou a escala no app (notificação "Nova escala").
+  seenAt          DateTime?
 
   service    Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   member     Member?    @relation(fields: [memberId], references: [id])

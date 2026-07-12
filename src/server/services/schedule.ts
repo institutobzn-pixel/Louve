@@ -1,6 +1,5 @@
-import type { AssignmentStatus } from "@prisma/client";
-
 import { prisma } from "@/server/db";
+import { findBlockingAvailability } from "./availability-check";
 
 /**
  * Regras de negócio da Escala (docs/04 e 08 · Fase 4).
@@ -69,20 +68,6 @@ export async function assignMember(
   return assignment;
 }
 
-export async function updateAssignmentStatus(
-  organizationId: string,
-  assignmentId: string,
-  status: AssignmentStatus
-) {
-  await prisma.assignment.findFirstOrThrow({
-    where: { id: assignmentId, service: { organizationId } },
-  });
-  return prisma.assignment.update({
-    where: { id: assignmentId },
-    data: { status, respondedAt: new Date() },
-  });
-}
-
 export async function removeAssignment(
   organizationId: string,
   assignmentId: string
@@ -118,8 +103,6 @@ export async function suggestMembers(
 ): Promise<MemberSuggestion[]> {
   const service = await getOwnedService(organizationId, serviceId);
   const serviceDate = new Date(service.date);
-  const serviceDay = serviceDate.toISOString().slice(0, 10);
-  const serviceWeekday = serviceDate.getUTCDay();
 
   const ninetyDaysAgo = new Date();
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
@@ -163,13 +146,10 @@ export async function suggestMembers(
   };
 
   const suggestions = candidates.map((candidate) => {
-    const blocking = candidate.member.availability.find((entry) => {
-      if (entry.available) return false;
-      if (entry.date) {
-        return entry.date.toISOString().slice(0, 10) === serviceDay;
-      }
-      return entry.weekday === serviceWeekday;
-    });
+    const blocking = findBlockingAvailability(
+      candidate.member.availability,
+      serviceDate
+    );
 
     return {
       memberId: candidate.memberId,

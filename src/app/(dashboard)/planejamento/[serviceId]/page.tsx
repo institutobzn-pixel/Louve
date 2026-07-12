@@ -11,6 +11,7 @@ import { ServiceTabs } from "@/features/service/components/service-tabs";
 import { SetlistBoard } from "@/features/setlist/components/setlist-board";
 import { ScheduleBoard } from "@/features/schedule/components/schedule-board";
 import { getInstrumentOptions } from "@/features/team/queries";
+import { findBlockingAvailability } from "@/server/services/availability-check";
 import {
   getServiceDetail,
   getServiceFormOptions,
@@ -88,16 +89,29 @@ export default async function CultoPage({ params }: PageProps) {
           <ScheduleBoard
             serviceId={service.id}
             categories={instrumentCategories}
-            assignments={service.assignments.map((assignment) => ({
-              id: assignment.id,
-              memberId: assignment.memberId,
-              memberName: assignment.member?.name ?? null,
-              instrumentId: assignment.instrumentId,
-              instrumentName: assignment.instrument.name,
-              categoryKey: assignment.instrument.category.key,
-              status: assignment.status,
-              isLeader: assignment.isLeader,
-            }))}
+            assignments={service.assignments
+              .filter((assignment) => assignment.status !== "SUBSTITUIDO")
+              .map((assignment) => {
+                const blocking = assignment.member
+                  ? findBlockingAvailability(
+                      assignment.member.availability,
+                      new Date(service.date)
+                    )
+                  : undefined;
+                return {
+                  id: assignment.id,
+                  memberId: assignment.memberId,
+                  memberName: assignment.member?.name ?? null,
+                  instrumentId: assignment.instrumentId,
+                  instrumentName: assignment.instrument.name,
+                  categoryKey: assignment.instrument.category.key,
+                  isLeader: assignment.isLeader,
+                  seen: assignment.seenAt !== null,
+                  unavailableReason: blocking
+                    ? (blocking.reason ?? "Indisponível")
+                    : null,
+                };
+              })}
           />
         }
         setlistContent={

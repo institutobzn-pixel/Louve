@@ -65,9 +65,11 @@ Cada culto abre em `/planejamento/[serviceId]` com **abas** (uma superfície, co
 
 - **Adicionar música ao setlist:** botão → `SongPicker` (tabs Biblioteca / Implantação) → escolhe
   versão e tom → item entra na lista → reordenável por arraste.
-- **Fechar escala:** por categoria, escolher músico (filtrado por função + disponibilidade); o
-  sistema sugere substituto se o titular estiver indisponível; envia convite → músico confirma
-  no app do músico → checklist "Confirmações" reflete o status.
+- **Fechar escala (modelo sem convite):** por categoria, escolher músico — as sugestões mostram
+  a **indisponibilidade** registrada pelo próprio músico, mas **não impedem** a escalação (o
+  integrante aparece com selo "Indisponível"). Escalar já efetiva: o músico recebe a
+  **notificação "Nova escala"** ao abrir o app, e a gestão vê o ✓✓ de visualizado. O sistema
+  sugere substitutos quando o líder precisar trocar alguém.
 - **Implantar música:** no kanban, arrastar card até **Implantada** → música migra para a
   Biblioteca (mantendo histórico) e passa a aparecer na aba "Biblioteca Oficial" do SongPicker.
 
@@ -75,7 +77,7 @@ Cada culto abre em `/planejamento/[serviceId]` com **abas** (uma superfície, co
 
 ```
 Login → Minha Agenda → Meus Cultos → Minha Escala → Modo Ensaio (só a minha função)
-        ↳ Confirmar presença · Atualizar disponibilidade · Avisos · Perfil · Biblioteca
+        ↳ Notificação de nova escala · Atualizar disponibilidade · Avisos · Perfil · Biblioteca
 ```
 
 O músico vê **apenas** o conteúdo da sua função no Modo Ensaio (ex.: violinista vê partitura /
