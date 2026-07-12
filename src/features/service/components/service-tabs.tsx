@@ -47,11 +47,11 @@ export function ServiceTabs({
           <TabsTrigger value="informacoes">
             <Info className="h-4 w-4" /> Informações
           </TabsTrigger>
-          <TabsTrigger value="setlist">
-            <ListMusic className="h-4 w-4" /> Setlist
-          </TabsTrigger>
           <TabsTrigger value="escala">
             <Users className="h-4 w-4" /> Escala
+          </TabsTrigger>
+          <TabsTrigger value="setlist">
+            <ListMusic className="h-4 w-4" /> Setlist
           </TabsTrigger>
           <TabsTrigger value="ensaio">
             <Music4 className="h-4 w-4" /> Modo Ensaio
@@ -77,8 +77,6 @@ export function ServiceTabs({
         </Card>
       </TabsContent>
 
-      <TabsContent value="setlist">{setlistContent}</TabsContent>
-
       <TabsContent value="escala">
         <EmptyState
           icon={Users}
@@ -86,6 +84,8 @@ export function ServiceTabs({
           description="Liderança, Voz, Ritmo, Harmonia, Cordas, Sopros, Percussão e Produção — chega na Fase 4."
         />
       </TabsContent>
+
+      <TabsContent value="setlist">{setlistContent}</TabsContent>
 
       <TabsContent value="ensaio">
         <EmptyState
