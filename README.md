@@ -10,16 +10,16 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 4 — Escala (entregue, em validação)** · Fases 0–3 e Arquitetura aprovadas ✅
+🟣 **Fase 5 — App do Músico + Modo Ensaio (entregue, em validação)** · Fases 0–4 aprovadas ✅
 
-A aba Escala do culto está funcional, organizada pelas **9 categorias** do prompt
-(Liderança, Voz, Ritmo, Harmonia, Cordas, Sopros Madeira, Sopros Metais, Percussão
-Orquestral, Produção). O seletor de músicos mostra **sugestões ranqueadas** por
-disponibilidade × instrumento principal × nível × carga recente (90 dias), com selo de
-disponível/indisponível. Status por escalado (Convidado → Confirmado/Recusou) e fluxo de
-**substituição automática sugerida** quando alguém recusa — o titular fica marcado como
-Substituído e sai da escala ativa. A **Fase 5 (App do Músico + Modo Ensaio)** inicia após
-validação.
+App restrito do músico em `/musico` (mobile-first, bottom-nav): **Minha Agenda** (convites
+com **Confirmar presença / Não posso**), **Meus Cultos**, página do culto na visão do
+músico (minha função, setlist somente leitura, avisos), **Perfil** (instrumentos + editar
+a própria disponibilidade) e o **Modo Ensaio Inteligente** — cada músico vê somente o
+material da sua função: instrumentista (partitura, playback, multitrack, clique, **loop**,
+observações), vocal (letra, guia vocal, playback, tom) e baterista (clique, estrutura,
+playback). Até o Supabase Auth entrar, um seletor "visualizar como" define a identidade em
+dev. A **Fase 6 (Checklist, Avisos, Paleta e Mapa de Palco)** inicia após validação.
 
 ### Rodando localmente
 

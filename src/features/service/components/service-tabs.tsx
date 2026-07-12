@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { EmptyState } from "@/components/shared/empty-state";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,8 @@ interface ServiceTabsProps {
   setlistContent: React.ReactNode;
   /** Conteúdo da aba Escala (board por categorias). */
   scheduleContent: React.ReactNode;
+  /** Link para o Modo Ensaio deste culto (App do Músico). */
+  rehearsalHref: string;
   checklistItems: ChecklistItemView[];
 }
 
@@ -41,6 +44,7 @@ export function ServiceTabs({
   infoContent,
   setlistContent,
   scheduleContent,
+  rehearsalHref,
   checklistItems,
 }: ServiceTabsProps) {
   return (
@@ -88,7 +92,14 @@ export function ServiceTabs({
         <EmptyState
           icon={Music4}
           title="Modo Ensaio Inteligente"
-          description="Cada músico vê somente o material da sua função — chega na Fase 5."
+          description="Cada músico escalado vê somente o material da sua função no App do Músico: partitura, playback, multitrack, clique e loop — ou letra, guia e tom para vocais."
+          action={
+            <Button asChild variant="outline">
+              <a href={rehearsalHref}>
+                <Music4 /> Ver como músico escalado
+              </a>
+            </Button>
+          }
         />
       </TabsContent>
 

@@ -1,24 +1,33 @@
 "use client";
 
 import * as React from "react";
-import { Loader2, Pause, Play } from "lucide-react";
+import { Loader2, Pause, Play, Repeat } from "lucide-react";
 import WaveSurfer from "wavesurfer.js";
 
 import { Button } from "@/components/ui/button";
 import { formatDuration } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 interface AudioPlayerProps {
   src: string;
+  /** Exibe o botão de loop (Modo Ensaio). */
+  allowLoop?: boolean;
 }
 
 /** Player de áudio com waveform (WaveSurfer) — playbacks, guias e cliques. */
-export function AudioPlayer({ src }: AudioPlayerProps) {
+export function AudioPlayer({ src, allowLoop = false }: AudioPlayerProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const wavesurferRef = React.useRef<WaveSurfer | null>(null);
+  const loopRef = React.useRef(false);
   const [ready, setReady] = React.useState(false);
   const [playing, setPlaying] = React.useState(false);
+  const [loop, setLoop] = React.useState(false);
   const [duration, setDuration] = React.useState(0);
   const [current, setCurrent] = React.useState(0);
+
+  React.useEffect(() => {
+    loopRef.current = loop;
+  }, [loop]);
 
   React.useEffect(() => {
     if (!containerRef.current) return;
@@ -45,7 +54,13 @@ export function AudioPlayer({ src }: AudioPlayerProps) {
     });
     ws.on("play", () => setPlaying(true));
     ws.on("pause", () => setPlaying(false));
-    ws.on("finish", () => setPlaying(false));
+    ws.on("finish", () => {
+      if (loopRef.current) {
+        ws.play(0);
+      } else {
+        setPlaying(false);
+      }
+    });
     ws.on("timeupdate", (time) => setCurrent(time));
 
     wavesurferRef.current = ws;
@@ -77,6 +92,18 @@ export function AudioPlayer({ src }: AudioPlayerProps) {
         {formatDuration(Math.floor(current))} /{" "}
         {formatDuration(Math.floor(duration))}
       </span>
+      {allowLoop ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={loop ? "Desativar loop" : "Ativar loop"}
+          aria-pressed={loop}
+          className={cn(loop && "bg-accent text-primary")}
+          onClick={() => setLoop((prev) => !prev)}
+        >
+          <Repeat />
+        </Button>
+      ) : null}
     </div>
   );
 }

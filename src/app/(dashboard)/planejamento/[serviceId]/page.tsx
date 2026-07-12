@@ -83,6 +83,7 @@ export default async function CultoPage({ params }: PageProps) {
 
       <ServiceTabs
         checklistItems={service.checklist?.items ?? []}
+        rehearsalHref={`/musico/ensaio/${service.id}`}
         scheduleContent={
           <ScheduleBoard
             serviceId={service.id}

@@ -56,7 +56,7 @@ import {
   versionFormSchema,
   type VersionFormValues,
 } from "../schema";
-import { AudioPlayer } from "./audio-player";
+import { AudioPlayer } from "@/components/shared/audio-player";
 
 export interface FileView {
   id: string;
