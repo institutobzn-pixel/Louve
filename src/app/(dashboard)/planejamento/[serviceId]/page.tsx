@@ -10,6 +10,11 @@ import { ServiceStatusPill } from "@/features/service/components/service-status-
 import { ServiceTabs } from "@/features/service/components/service-tabs";
 import { SetlistBoard } from "@/features/setlist/components/setlist-board";
 import { ScheduleBoard } from "@/features/schedule/components/schedule-board";
+import { ChecklistPanel } from "@/features/facets/components/checklist-panel";
+import { NoticesPanel } from "@/features/facets/components/notices-panel";
+import { PaletteEditor } from "@/features/facets/components/palette-editor";
+import { StageMapEditor } from "@/features/facets/components/stage-map-editor";
+import { buildChecklist } from "@/features/facets/checklist";
 import { getInstrumentOptions } from "@/features/team/queries";
 import { findBlockingAvailability } from "@/server/services/availability-check";
 import {
@@ -37,6 +42,46 @@ export default async function CultoPage({ params }: PageProps) {
   if (!service) notFound();
 
   const date = new Date(service.date);
+
+  const activeAssignments = service.assignments.filter(
+    (assignment) => assignment.status !== "SUBSTITUIDO"
+  );
+
+  const checklistItems = buildChecklist({
+    items: service.checklist?.items ?? [],
+    setlistCount: service.setlist?.items.length ?? 0,
+    scheduledCount: activeAssignments.length,
+    seenCount: activeAssignments.filter((a) => a.seenAt !== null).length,
+    hasPalette: Boolean(service.palette && service.palette.colors),
+    stagePinCount: service.stageMap?.positions.length ?? 0,
+  });
+
+  // Opções e pinos do mapa de palco.
+  const stageAssignmentOptions = activeAssignments
+    .filter((a) => a.member)
+    .map((a) => ({
+      assignmentId: a.id,
+      memberName: a.member!.name,
+      instrumentName: a.instrument.name,
+    }));
+
+  const initialPins = (service.stageMap?.positions ?? []).map((position) => {
+    const assignment = position.assignmentId
+      ? activeAssignments.find((a) => a.id === position.assignmentId)
+      : undefined;
+    return {
+      key: position.id,
+      assignmentId: position.assignmentId,
+      label: assignment?.member?.name ?? position.label ?? "Sem nome",
+      sublabel: assignment?.instrument.name ?? null,
+      x: position.x,
+      y: position.y,
+    };
+  });
+
+  const paletteColors = Array.isArray(service.palette?.colors)
+    ? (service.palette.colors as string[])
+    : [];
 
   return (
     <>
@@ -83,8 +128,37 @@ export default async function CultoPage({ params }: PageProps) {
       </div>
 
       <ServiceTabs
-        checklistItems={service.checklist?.items ?? []}
         rehearsalHref={`/musico/ensaio/${service.id}`}
+        checklistContent={
+          <ChecklistPanel serviceId={service.id} items={checklistItems} />
+        }
+        noticesContent={
+          <NoticesPanel
+            serviceId={service.id}
+            notices={service.notices.map((notice) => ({
+              id: notice.id,
+              title: notice.title,
+              body: notice.body,
+            }))}
+          />
+        }
+        paletteContent={
+          <PaletteEditor
+            serviceId={service.id}
+            palette={{
+              colors: paletteColors,
+              notes: service.palette?.notes ?? null,
+              referenceUrl: service.palette?.referenceUrl ?? null,
+            }}
+          />
+        }
+        stageMapContent={
+          <StageMapEditor
+            serviceId={service.id}
+            initialPins={initialPins}
+            assignments={stageAssignmentOptions}
+          />
+        }
         scheduleContent={
           <ScheduleBoard
             serviceId={service.id}

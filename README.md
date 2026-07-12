@@ -10,16 +10,14 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 5 — App do Músico + Modo Ensaio (entregue, em validação)** · Fases 0–4 aprovadas ✅
+🟣 **Fase 6 — Facetas do Culto (entregue, em validação)** · Fases 0–5 aprovadas ✅
 
-App restrito do músico em `/musico` (mobile-first, bottom-nav): **Minha Agenda** (convites
-com **Confirmar presença / Não posso**), **Meus Cultos**, página do culto na visão do
-músico (minha função, setlist somente leitura, avisos), **Perfil** (instrumentos + editar
-a própria disponibilidade) e o **Modo Ensaio Inteligente** — cada músico vê somente o
-material da sua função: instrumentista (partitura, playback, multitrack, clique, **loop**,
-observações), vocal (letra, guia vocal, playback, tom) e baterista (clique, estrutura,
-playback). Até o Supabase Auth entrar, um seletor "visualizar como" define a identidade em
-dev. A **Fase 6 (Checklist, Avisos, Paleta e Mapa de Palco)** inicia após validação.
+As quatro abas restantes da página do culto ficaram funcionais: **Checklist** com itens
+**automáticos** (Setlist, Escala, Paleta, Mapa e Visualizações refletem o estado real, com
+os manuais Material/Passagem de som livres), **Avisos** (criar/editar/excluir — aparecem no
+app do músico), **Paleta de Roupas** (cores com seletor, observações e referência visual) e
+**Mapa de Palco** (posicionamento gráfico dos músicos e rótulos livres por **arraste**, com
+salvamento automático). A **Fase 7 (Implantação de Músicas)** inicia após validação.
 
 ### Rodando localmente
 

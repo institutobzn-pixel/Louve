@@ -15,13 +15,6 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-
-interface ChecklistItemView {
-  id: string;
-  label: string;
-  isDone: boolean;
-}
 
 interface ServiceTabsProps {
   /** Conteúdo da aba Informações (formulário RSC-hidratado). */
@@ -30,22 +23,33 @@ interface ServiceTabsProps {
   setlistContent: React.ReactNode;
   /** Conteúdo da aba Escala (board por categorias). */
   scheduleContent: React.ReactNode;
+  /** Conteúdo da aba Paleta de Roupas. */
+  paletteContent: React.ReactNode;
+  /** Conteúdo da aba Mapa de Palco. */
+  stageMapContent: React.ReactNode;
+  /** Conteúdo da aba Avisos. */
+  noticesContent: React.ReactNode;
+  /** Conteúdo da aba Checklist. */
+  checklistContent: React.ReactNode;
   /** Link para o Modo Ensaio deste culto (App do Músico). */
   rehearsalHref: string;
-  checklistItems: ChecklistItemView[];
 }
 
 /**
  * Abas da página exclusiva do culto (docs/06-navegacao-fluxos.md).
- * Informações e Setlist funcionais; Checklist com itens semeados (leitura);
- * demais abas chegam nas próximas fases.
+ * Todas as facetas do culto convergem aqui: Informações, Escala, Setlist,
+ * Modo Ensaio (link para o app do músico), Paleta, Mapa de Palco, Avisos
+ * e Checklist.
  */
 export function ServiceTabs({
   infoContent,
   setlistContent,
   scheduleContent,
+  paletteContent,
+  stageMapContent,
+  noticesContent,
+  checklistContent,
   rehearsalHref,
-  checklistItems,
 }: ServiceTabsProps) {
   return (
     <Tabs defaultValue="informacoes">
@@ -103,64 +107,13 @@ export function ServiceTabs({
         />
       </TabsContent>
 
-      <TabsContent value="paleta">
-        <EmptyState
-          icon={Palette}
-          title="Paleta de Roupas"
-          description="Cores, observações e referência visual do culto — chega na Fase 6."
-        />
-      </TabsContent>
+      <TabsContent value="paleta">{paletteContent}</TabsContent>
 
-      <TabsContent value="palco">
-        <EmptyState
-          icon={MapPin}
-          title="Mapa de Palco"
-          description="Posicionamento gráfico dos músicos — chega na Fase 6."
-        />
-      </TabsContent>
+      <TabsContent value="palco">{stageMapContent}</TabsContent>
 
-      <TabsContent value="avisos">
-        <EmptyState
-          icon={Megaphone}
-          title="Avisos do culto"
-          description="Mensagens específicas deste culto — chega na Fase 6."
-        />
-      </TabsContent>
+      <TabsContent value="avisos">{noticesContent}</TabsContent>
 
-      <TabsContent value="checklist">
-        <Card>
-          <CardContent className="pt-6">
-            <ul className="space-y-2.5">
-              {checklistItems.map((item) => (
-                <li key={item.id} className="flex items-center gap-3 text-sm">
-                  <span
-                    className={cn(
-                      "flex h-5 w-5 items-center justify-center rounded-md border",
-                      item.isDone
-                        ? "border-success bg-success text-success-foreground"
-                        : "border-input"
-                    )}
-                    aria-hidden
-                  >
-                    {item.isDone ? "✓" : ""}
-                  </span>
-                  <span
-                    className={cn(
-                      item.isDone && "text-muted-foreground line-through"
-                    )}
-                  >
-                    {item.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs text-muted-foreground">
-              Os itens são marcados automaticamente conforme os módulos das
-              próximas fases forem concluídos.
-            </p>
-          </CardContent>
-        </Card>
-      </TabsContent>
+      <TabsContent value="checklist">{checklistContent}</TabsContent>
     </Tabs>
   );
 }

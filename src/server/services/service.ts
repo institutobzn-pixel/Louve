@@ -137,7 +137,9 @@ export async function getServiceById(
           instrument: { include: { category: true } },
         },
       },
-      notices: true,
+      notices: { orderBy: { title: "asc" } },
+      palette: true,
+      stageMap: { include: { positions: true } },
     },
   });
 }
