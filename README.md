@@ -10,14 +10,14 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 7 — Implantação de Músicas (entregue, em validação)** · Fases 0–6 aprovadas ✅
+🟣 **Fase 8 — Execução & Relatórios (entregue, em validação)** · Fases 0–7 aprovadas ✅
 
-Pipeline **kanban** em `/implantacao` com as 6 etapas do prompt (Em análise → Aprovada → Em
-estudo → Ensaiando → Pronta → Implantada) e **arrastar-e-soltar** entre colunas (dnd-kit,
-atualização otimista). Regra de negócio central: ao soltar em **Implantada**, a música
-**migra automaticamente para a Biblioteca Oficial preservando todo o histórico** (versões e
-arquivos) e passa a aparecer no seletor do setlist. Cadastro rápido de música no pipeline.
-A **Fase 8 (Execução & Relatórios)** inicia após validação.
+**Concluir um culto** registra a execução de cada música do setlist (fonte dos relatórios,
+idempotente). Página `/relatorios` com filtro de janela (**3 / 12 meses**): stat tiles
+(execuções, músicas distintas, cultos concluídos), **Músicas mais cantadas** (barras
+horizontais, Recharts, tema claro/escuro) e **Índice de Saturação** com o **semáforo**
+Verde/Amarelo/Vermelho (ícone + rótulo — nunca cor sozinha), última execução e contagem por
+música. A **Fase 9 (Comunicação, Realtime & Polimento)** inicia após validação.
 
 ### Rodando localmente
 

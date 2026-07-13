@@ -56,6 +56,34 @@ export async function updateServiceStatus(
   serviceId: string,
   status: ServiceStatus
 ) {
+  // Concluir o culto registra a execução de cada música do setlist
+  // (fonte dos relatórios). Idempotente: recria as execuções do culto.
+  if (status === "CONCLUIDO") {
+    const service = await prisma.service.findUniqueOrThrow({
+      where: { id: serviceId, organizationId },
+      include: { setlist: { include: { items: true } } },
+    });
+    const items = service.setlist?.items ?? [];
+    await prisma.$transaction([
+      prisma.songExecution.deleteMany({ where: { serviceId } }),
+      prisma.songExecution.createMany({
+        data: items.map((item) => ({
+          organizationId,
+          songId: item.songId,
+          serviceId,
+          playedAt: service.date,
+        })),
+      }),
+      prisma.service.update({
+        where: { id: serviceId, organizationId },
+        data: { status },
+      }),
+    ]);
+    return;
+  }
+
+  // Sair de "Concluído" remove as execuções registradas para o culto.
+  await prisma.songExecution.deleteMany({ where: { serviceId } });
   return prisma.service.update({
     where: { id: serviceId, organizationId },
     data: { status },
