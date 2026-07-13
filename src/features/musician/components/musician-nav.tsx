@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, ListMusic, UserRound } from "lucide-react";
+import { CalendarDays, ListMusic, Megaphone, UserRound } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const items = [
-  { title: "Minha Agenda", href: "/musico", icon: CalendarDays },
-  { title: "Meus Cultos", href: "/musico/cultos", icon: ListMusic },
+  { title: "Agenda", href: "/musico", icon: CalendarDays },
+  { title: "Cultos", href: "/musico/cultos", icon: ListMusic },
+  { title: "Avisos", href: "/musico/avisos", icon: Megaphone },
   { title: "Perfil", href: "/musico/perfil", icon: UserRound },
 ];
 

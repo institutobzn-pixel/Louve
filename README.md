@@ -10,14 +10,19 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 8 — Execução & Relatórios (entregue, em validação)** · Fases 0–7 aprovadas ✅
+🟣 **Fase 9 — Comunicação & Polimento (entregue, em validação)** · Fases 0–8 aprovadas ✅
 
-**Concluir um culto** registra a execução de cada música do setlist (fonte dos relatórios,
-idempotente). Página `/relatorios` com filtro de janela (**3 / 12 meses**): stat tiles
-(execuções, músicas distintas, cultos concluídos), **Músicas mais cantadas** (barras
-horizontais, Recharts, tema claro/escuro) e **Índice de Saturação** com o **semáforo**
-Verde/Amarelo/Vermelho (ícone + rótulo — nunca cor sozinha), última execução e contagem por
-música. A **Fase 9 (Comunicação, Realtime & Polimento)** inicia após validação.
+Módulo **Comunicação** (`/comunicacao`): avisos gerais **segmentados por papel** (chips de
+público-alvo; vazio = toda a equipe), rascunho/publicado, editar e excluir. Avisos
+publicados para o papel Músico aparecem na aba **Avisos** do App do Músico (rascunhos e
+avisos de outros papéis não vazam). **Dashboard** preenchido com números reais (próximos
+cultos, músicas na biblioteca, membros ativos, em implantação) e a lista dos próximos
+cultos. Falta apenas a **Fase 10 (SaaS)** — autenticação real, multi-tenant e billing —
+que depende de um projeto Supabase configurado.
+
+> **Realtime:** a arquitetura prevê canais do Supabase Realtime para colaboração ao vivo;
+> a ativação entra junto com a autenticação (Fase 10), pois depende das credenciais do
+> Supabase. Até lá, as telas revalidam a cada mutação.
 
 ### Rodando localmente
 

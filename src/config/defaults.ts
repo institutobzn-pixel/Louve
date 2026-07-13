@@ -16,6 +16,11 @@ export const defaultRoles: Array<{ key: RoleKey; label: string }> = [
   { key: "MUSICO", label: "Músico" },
 ];
 
+/** Rótulos de papel indexados por chave (para selects e badges). */
+export const roleLabels: Record<RoleKey, string> = Object.fromEntries(
+  defaultRoles.map((r) => [r.key, r.label])
+) as Record<RoleKey, string>;
+
 export const defaultCategories: Array<{
   key: InstrumentCategoryKey;
   label: string;
