@@ -79,7 +79,12 @@ async function main() {
   }
   console.log(`✓ ${defaultCategories.length} categorias de instrumento`);
 
-  // Organização demo para desenvolvimento (até o onboarding SaaS existir).
+  // Organização demo apenas para desenvolvimento. Em produção (com auth),
+  // a organização real é criada no cadastro — rode com SEED_DEMO=false.
+  if (process.env.SEED_DEMO === "false") {
+    console.log("• SEED_DEMO=false — pulando organização demo");
+    return;
+  }
   let org = await prisma.organization.findFirst();
   if (!org) {
     org = await prisma.organization.create({

@@ -49,7 +49,7 @@ export function Sidebar() {
 
       <div className="border-t p-4">
         <p className="text-xs text-muted-foreground">
-          Fase 9 · Comunicação
+          Fase 10 · SaaS / Auth
         </p>
       </div>
     </aside>

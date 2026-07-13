@@ -1,16 +1,21 @@
 import { cache } from "react";
 
 import { prisma } from "@/server/db";
+import { getAuthContext, supabaseAuthEnabled } from "@/server/auth";
 
 /**
  * Resolve a organização (tenant) atual.
  *
- * Fase atual: single-tenant de desenvolvimento — retorna a única organização
- * do banco (criada pelo seed). Quando a autenticação entrar (Fase 5 do
- * roadmap), este helper passa a ler o `organization_id` da sessão Supabase,
- * sem que os chamadores precisem mudar.
+ * - Com Supabase Auth: a organização do usuário logado (multi-tenant real).
+ * - Sem credenciais (dev): a única organização do banco (seed).
  */
 export const getCurrentOrganization = cache(async () => {
+  if (supabaseAuthEnabled) {
+    const auth = await getAuthContext();
+    if (auth) return auth.organization;
+    throw new Error("Sessão sem organização — faça login.");
+  }
+
   const org = await prisma.organization.findFirst({
     orderBy: { createdAt: "asc" },
   });

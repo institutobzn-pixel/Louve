@@ -8,14 +8,15 @@ const supabaseConfigured = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
+
 /**
- * Middleware de sessão (docs/09-autenticacao-storage.md).
- * Fase 0: mantém a sessão Supabase atualizada. O gate de rotas por papel
- * (redirecionar MUSICO para o app do músico, exigir login no dashboard)
- * entra junto com as telas de auth.
+ * Middleware de sessão + gate de rotas (docs/09).
+ * - Mantém a sessão Supabase atualizada.
+ * - Sem sessão: redireciona para /login (exceto rotas públicas e estáticos).
+ * - Sem Supabase configurado (dev): segue sem exigir login.
  */
 export async function middleware(request: NextRequest) {
-  // Permite rodar o app localmente antes de configurar o Supabase.
   if (!supabaseConfigured) return NextResponse.next();
 
   let response = NextResponse.next({ request });
@@ -41,15 +42,31 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Revalida o token e mantém os cookies de sessão frescos.
-  await supabase.auth.getUser();
+  let user = null;
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+  } catch {
+    // Falha ao alcançar o Auth — trata como não autenticado (vai p/ login).
+    user = null;
+  }
+
+  const { pathname } = request.nextUrl;
+  const isPublic = PUBLIC_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`)
+  );
+
+  if (!user && !isPublic) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
 
   return response;
 }
 
 export const config = {
   matcher: [
-    // Tudo, exceto estáticos e assets do Next.
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -10,19 +10,21 @@ comercialização mundial como SaaS multi-tenant.
 
 ## Status do projeto
 
-🟣 **Fase 9 — Comunicação & Polimento (entregue, em validação)** · Fases 0–8 aprovadas ✅
+🟣 **Fase 10 — SaaS / Autenticação (código pronto; ativar via runbook)** · Fases 0–9 aprovadas ✅
 
-Módulo **Comunicação** (`/comunicacao`): avisos gerais **segmentados por papel** (chips de
-público-alvo; vazio = toda a equipe), rascunho/publicado, editar e excluir. Avisos
-publicados para o papel Músico aparecem na aba **Avisos** do App do Músico (rascunhos e
-avisos de outros papéis não vazam). **Dashboard** preenchido com números reais (próximos
-cultos, músicas na biblioteca, membros ativos, em implantação) e a lista dos próximos
-cultos. Falta apenas a **Fase 10 (SaaS)** — autenticação real, multi-tenant e billing —
-que depende de um projeto Supabase configurado.
+Autenticação real com **Supabase Auth** e multi-tenant: telas de **login** e **cadastro de
+igreja** (onboarding cria a organização + o admin e provisiona o catálogo), **gate de
+rotas** no middleware (sem sessão → `/login`; músico → app do músico), resolução de tenant
+por sessão (`getCurrentOrganization`/`getCurrentMember` leem o usuário logado), botão de
+**sair** e políticas **RLS** + **Auth Hook** de claims. Tudo isolado atrás de um _flag_: sem
+as variáveis do Supabase, o app roda em **modo de desenvolvimento** (sem login).
 
-> **Realtime:** a arquitetura prevê canais do Supabase Realtime para colaboração ao vivo;
-> a ativação entra junto com a autenticação (Fase 10), pois depende das credenciais do
-> Supabase. Até lá, as telas revalidam a cada mutação.
+**Para ativar:** siga o [Runbook do Supabase](docs/12-runbook-supabase.md) — definir as
+variáveis, `prisma migrate deploy`, `SEED_DEMO=false npm run db:seed`, aplicar o SQL de
+`supabase/policies/` e cadastrar a primeira conta em `/signup`.
+
+Este é o **produto completo** do prompt-mestre: todos os módulos, o app do músico e a
+camada SaaS. Billing e Realtime colaborativo ficam como evolução natural sobre esta base.
 
 ### Rodando localmente
 
