@@ -19,32 +19,29 @@ NEXT_PUBLIC_APP_URL=https://<seu-dominio>
 > Na senha da string de conexão, caracteres especiais precisam ser
 > URL-encoded (ex.: `@` → `%40`).
 
-## 2. Criar o schema no Supabase
+## 2. Provisionar o banco — caminho fácil (recomendado)
 
-Aplica todas as tabelas (usa `DIRECT_URL`):
+Um único arquivo faz tudo (schema + papéis + categorias + RLS + auth hook),
+sem terminal e sem conexão direta ao Postgres:
+
+1. No painel do Supabase → **SQL Editor** → **New query**.
+2. Cole todo o conteúdo de **`supabase/setup.sql`**.
+3. Clique em **Run**.
+
+É idempotente (pode rodar de novo sem quebrar). Depois, habilite o hook em
+**Authentication → Hooks → Custom Access Token** apontando para
+`public.custom_access_token_hook`.
+
+> Testado contra Postgres: 29 tabelas, 8 papéis, 9 categorias, 39 políticas
+> e o auth hook, sem erros.
+
+### Alternativa via terminal (máquina com acesso direto ao banco)
 
 ```bash
-npx prisma migrate deploy
+npx prisma migrate deploy            # cria o schema
+SEED_DEMO=false npm run db:seed      # papéis + categorias (sem org demo)
 ```
-
-## 3. Semear papéis e categorias (sem organização demo)
-
-```bash
-SEED_DEMO=false npm run db:seed
-```
-
-Cria os 8 papéis, as 9 categorias e a lista de instrumentos padrão —
-a organização real é criada no cadastro.
-
-## 4. Row Level Security (defesa em profundidade)
-
-O app já isola por tenant na camada de serviço (todas as queries Prisma
-filtram por `organizationId`). As políticas RLS são a segunda camada.
-Aplique os arquivos de `supabase/policies/` no **SQL Editor** do Supabase
-(ou por pipeline):
-
-- `001-tenant-isolation.sql`
-- `002-auth-hook.sql` (claims de JWT — opcional, para leituras via supabase-js)
+E aplique `supabase/policies/001-*.sql` e `002-*.sql` no SQL Editor.
 
 ## 5. Criar a primeira conta
 
