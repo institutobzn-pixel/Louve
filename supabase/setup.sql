@@ -1,8 +1,18 @@
 -- ============================================================
---  LOUVE — Setup completo do banco (cole no SQL Editor do Supabase)
---  Gera: tabelas + dados iniciais + segurança (RLS) + auth hook
---  Seguro para rodar mais de uma vez (idempotente nos dados/policies).
+--  LOUVE — Setup completo do banco (v2, re-executavel)
+--  Limpa o schema public e recria tudo do zero. Seguro para
+--  rodar mais de uma vez.
 -- ============================================================
+
+-- Reset limpo do schema public (banco novo — nada de valor a perder)
+drop schema if exists public cascade;
+create schema public;
+
+-- Restaura as permissoes padrao que o Supabase espera no schema public
+grant usage on schema public to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
 
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
