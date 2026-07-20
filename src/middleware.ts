@@ -8,7 +8,7 @@ const supabaseConfigured = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
+const PUBLIC_PATHS = ["/login", "/signup", "/auth", "/api/diag"];
 
 /**
  * Middleware de sessão + gate de rotas (docs/09).
