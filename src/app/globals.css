@@ -76,6 +76,28 @@
 }
 
 /* FullCalendar — alinhado aos tokens do Design System (dark/light) */
+/* Mixer de multitracks — controles deslizantes */
+.mixer-seek::-webkit-slider-thumb,
+.mixer-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  cursor: pointer;
+  border: 2px solid hsl(var(--background));
+}
+.mixer-seek::-moz-range-thumb,
+.mixer-vol::-moz-range-thumb {
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  cursor: pointer;
+  border: 2px solid hsl(var(--background));
+}
+
 .service-calendar {
   --fc-border-color: hsl(var(--border));
   --fc-page-bg-color: transparent;

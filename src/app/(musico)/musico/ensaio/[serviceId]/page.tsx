@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Download, FileText, Layers, Music4 } from "lucide-react";
 
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,16 +49,18 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
     assignment.instrument.category.key === "LIDERANCA";
   const isDrummer = assignment.instrument.name === "Bateria";
 
+  // Trilhas MULTITRACK de áudio vão para o mixer; os demais áudios
+  // (playback, guia, clique) ficam em players individuais.
   const audioKinds: FileKind[] = isVocal
     ? ["GUIA_VOCAL", "PLAYBACK"]
     : isDrummer
       ? ["CLIQUE", "PLAYBACK"]
-      : ["PLAYBACK", "MULTITRACK", "CLIQUE"];
+      : ["PLAYBACK", "CLIQUE"];
   const docKinds: FileKind[] = isVocal
     ? ["LETRA", "CIFRA"]
     : isDrummer
       ? []
-      : ["PARTITURA", "CIFRA", "MULTITRACK"];
+      : ["PARTITURA", "CIFRA"];
 
   return (
     <>
@@ -87,6 +90,11 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
       ) : (
         <div className="space-y-4">
           {items.map(({ item, files }, index) => {
+            const multitrackFiles = files.filter(
+              (file) =>
+                file.kind === "MULTITRACK" &&
+                file.mimeType?.startsWith("audio/")
+            );
             const audioFiles = files.filter(
               (file) =>
                 audioKinds.includes(file.kind) &&
@@ -147,6 +155,16 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                     </div>
                   ) : null}
 
+                  {multitrackFiles.length > 0 ? (
+                    <MultitrackMixer
+                      tracks={multitrackFiles.map((file) => ({
+                        id: file.id,
+                        name: stemName(file.name),
+                        src: `/api/files/${file.id}`,
+                      }))}
+                    />
+                  ) : null}
+
                   {audioFiles.map((file) => (
                     <div key={file.id} className="space-y-1">
                       <p className="text-xs font-medium uppercase text-muted-foreground">
@@ -183,7 +201,9 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                     </div>
                   ) : null}
 
-                  {audioFiles.length === 0 && docFiles.length === 0 ? (
+                  {multitrackFiles.length === 0 &&
+                  audioFiles.length === 0 &&
+                  docFiles.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
                       Nenhum material da sua função foi enviado para esta
                       música ainda.
@@ -197,6 +217,12 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
       )}
     </>
   );
+}
+
+/** Nome amigável da trilha a partir do arquivo (ex.: "baixo.mp3" → "Baixo"). */
+function stemName(filename: string) {
+  const base = filename.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+  return base.charAt(0).toUpperCase() + base.slice(1);
 }
 
 function kindLabel(file: SongFile) {

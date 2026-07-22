@@ -57,6 +57,7 @@ import {
   type VersionFormValues,
 } from "../schema";
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 
 export interface FileView {
   id: string;
@@ -78,6 +79,12 @@ export interface VersionView {
 interface VersionManagerProps {
   songId: string;
   versions: VersionView[];
+}
+
+/** Nome amigável da trilha a partir do arquivo (ex.: "baixo.mp3" → "Baixo"). */
+function stemName(filename: string) {
+  const base = filename.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+  return base.charAt(0).toUpperCase() + base.slice(1);
 }
 
 function formatSize(bytes: number | null) {
@@ -182,6 +189,21 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
               ) : null}
             </CardHeader>
             <CardContent className="space-y-2">
+              {(() => {
+                const stems = version.files.filter(
+                  (f) =>
+                    f.kind === "MULTITRACK" && f.mimeType?.startsWith("audio/")
+                );
+                return stems.length >= 2 ? (
+                  <MultitrackMixer
+                    tracks={stems.map((f) => ({
+                      id: f.id,
+                      name: stemName(f.name),
+                      src: `/api/files/${f.id}`,
+                    }))}
+                  />
+                ) : null;
+              })()}
               {version.files.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   Sem arquivos — use &quot;Enviar arquivo&quot; para anexar
@@ -190,7 +212,17 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
               ) : (
                 version.files.map((file) => {
                   const Icon = kindIcon(file.kind, file.mimeType);
-                  const isAudio = file.mimeType?.startsWith("audio/");
+                  // Trilhas do mixer não repetem player individual.
+                  const inMixer =
+                    file.kind === "MULTITRACK" &&
+                    file.mimeType?.startsWith("audio/") &&
+                    version.files.filter(
+                      (f) =>
+                        f.kind === "MULTITRACK" &&
+                        f.mimeType?.startsWith("audio/")
+                    ).length >= 2;
+                  const isAudio =
+                    file.mimeType?.startsWith("audio/") && !inMixer;
                   return (
                     <div
                       key={file.id}
