@@ -13,7 +13,6 @@ import {
   Loader2,
   Music2,
   Pencil,
-  Play,
   Plus,
   Trash2,
   Upload,
@@ -35,6 +34,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,23 +48,23 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import {
   addVersionAction,
+  addVideoAction,
   removeFileAction,
   removeVersionAction,
+  removeVideoAction,
   updateVersionAction,
 } from "../actions";
 import {
   fileKindLabels,
   fileKinds,
   versionFormSchema,
+  videoFormSchema,
   type VersionFormValues,
+  type VideoFormValues,
 } from "../schema";
 import { AudioPlayer } from "@/components/shared/audio-player";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
-import {
-  youtubeThumbnail,
-  youtubeVideoId,
-  youtubeWatchUrl,
-} from "@/lib/youtube";
+import { VideoGallery } from "@/components/shared/video-gallery";
 
 export interface FileView {
   id: string;
@@ -74,13 +74,19 @@ export interface FileView {
   mimeType: string | null;
 }
 
+export interface VideoView {
+  id: string;
+  label: string;
+  url: string;
+}
+
 export interface VersionView {
   id: string;
   label: string;
   key: string | null;
   bpm: number | null;
   notes: string | null;
-  youtubeUrl: string | null;
+  videos: VideoView[];
   files: FileView[];
 }
 
@@ -135,6 +141,16 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
     }
   }
 
+  async function handleRemoveVideo(videoId: string) {
+    const result = await removeVideoAction(songId, videoId);
+    if (result.ok) {
+      toast.success("Vídeo removido.");
+      router.refresh();
+    } else {
+      toast.error(result.error);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -168,7 +184,12 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
                     {version.bpm} bpm
                   </Badge>
                 ) : null}
-                <span className="ml-auto flex items-center gap-1">
+                <span className="ml-auto flex flex-wrap items-center justify-end gap-1">
+                  <AddVideoButton
+                    songId={songId}
+                    versionId={version.id}
+                    onDone={() => router.refresh()}
+                  />
                   <UploadFileButton
                     versionId={version.id}
                     onDone={() => router.refresh()}
@@ -197,35 +218,12 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
               ) : null}
             </CardHeader>
             <CardContent className="space-y-2">
-              {(() => {
-                const videoId = youtubeVideoId(version.youtubeUrl);
-                if (!videoId) return null;
-                return (
-                  <a
-                    href={youtubeWatchUrl(videoId)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative block aspect-video w-full max-w-sm overflow-hidden rounded-xl border"
-                    aria-label={`Assistir "${version.label}" no YouTube`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={youtubeThumbnail(videoId)}
-                      alt={`Miniatura do vídeo da versão ${version.label}`}
-                      className="h-full w-full object-cover transition group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/25 transition group-hover:bg-black/35">
-                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-600 text-white shadow-lg">
-                        <Play className="h-6 w-6 translate-x-0.5 fill-current" />
-                      </span>
-                    </span>
-                    <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white">
-                      <Youtube className="h-3.5 w-3.5" /> YouTube
-                    </span>
-                  </a>
-                );
-              })()}
+              {version.videos.length > 0 ? (
+                <VideoGallery
+                  videos={version.videos}
+                  onRemove={handleRemoveVideo}
+                />
+              ) : null}
               {(() => {
                 const stems = version.files.filter(
                   (f) =>
@@ -398,6 +396,99 @@ function UploadFileButton({
   );
 }
 
+/* ---------- Adicionar vídeo (YouTube) ---------- */
+
+function AddVideoButton({
+  songId,
+  versionId,
+  onDone,
+}: {
+  songId: string;
+  versionId: string;
+  onDone: () => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const form = useForm<VideoFormValues>({
+    resolver: zodResolver(videoFormSchema),
+    defaultValues: { label: "", url: "" },
+  });
+
+  async function onSubmit(values: VideoFormValues) {
+    const result = await addVideoAction(songId, versionId, values);
+    if (result.ok) {
+      toast.success("Vídeo adicionado.");
+      form.reset();
+      setOpen(false);
+      onDone();
+    } else {
+      toast.error(result.error);
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) form.reset();
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Youtube className="text-red-600" /> Vídeo
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Adicionar vídeo</DialogTitle>
+          <DialogDescription>
+            Cole um link do YouTube. Ele vira uma miniatura para a equipe
+            assistir dentro do app.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="video-label">Nome *</Label>
+            <Input
+              id="video-label"
+              placeholder='Ex.: "Original", "Ao vivo", "Tutorial"'
+              {...form.register("label")}
+            />
+            {form.formState.errors.label ? (
+              <p className="text-xs text-danger">
+                {form.formState.errors.label.message}
+              </p>
+            ) : null}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="video-url">Link do YouTube *</Label>
+            <Input
+              id="video-url"
+              type="url"
+              inputMode="url"
+              placeholder="https://youtube.com/watch?v=..."
+              {...form.register("url")}
+            />
+            {form.formState.errors.url ? (
+              <p className="text-xs text-danger">
+                {form.formState.errors.url.message}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : null}
+              Adicionar
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 /* ---------- Diálogo de versão (criar/editar) ---------- */
 
 function VersionDialog({
@@ -420,7 +511,6 @@ function VersionDialog({
       key: version?.key ?? "",
       bpm: version?.bpm ? String(version.bpm) : "",
       notes: version?.notes ?? "",
-      youtubeUrl: version?.youtubeUrl ?? "",
     },
   });
 
@@ -479,26 +569,6 @@ function VersionDialog({
                 {...form.register("bpm")}
               />
             </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="v-youtube" className="flex items-center gap-1.5">
-              <Youtube className="h-4 w-4 text-red-600" /> Link do YouTube
-            </Label>
-            <Input
-              id="v-youtube"
-              type="url"
-              inputMode="url"
-              placeholder="Ex.: https://youtube.com/watch?v=..."
-              {...form.register("youtubeUrl")}
-            />
-            <p className="text-xs text-muted-foreground">
-              A miniatura do vídeo aparece na versão, para a equipe assistir.
-            </p>
-            {form.formState.errors.youtubeUrl ? (
-              <p className="text-xs text-danger">
-                {form.formState.errors.youtubeUrl.message}
-              </p>
-            ) : null}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="v-notes">Observações</Label>

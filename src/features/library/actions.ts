@@ -8,8 +8,10 @@ import * as songService from "@/server/services/song";
 import {
   songFormSchema,
   versionFormSchema,
+  videoFormSchema,
   type SongFormValues,
   type VersionFormValues,
+  type VideoFormValues,
 } from "./schema";
 
 type ActionResult<T = undefined> =
@@ -104,7 +106,6 @@ export async function addVersionAction(
       key: parsed.data.key?.trim() || null,
       bpm: parsed.data.bpm ? Number(parsed.data.bpm) : null,
       notes: parsed.data.notes?.trim() || null,
-      youtubeUrl: parsed.data.youtubeUrl?.trim() || null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };
@@ -130,7 +131,6 @@ export async function updateVersionAction(
       key: parsed.data.key?.trim() || null,
       bpm: parsed.data.bpm ? Number(parsed.data.bpm) : null,
       notes: parsed.data.notes?.trim() || null,
-      youtubeUrl: parsed.data.youtubeUrl?.trim() || null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };
@@ -156,6 +156,44 @@ export async function removeVersionAction(
       error:
         "Não foi possível excluir — a versão pode estar em uso em algum setlist.",
     };
+  }
+}
+
+export async function addVideoAction(
+  songId: string,
+  versionId: string,
+  values: VideoFormValues
+): Promise<ActionResult> {
+  const parsed = videoFormSchema.safeParse(values);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos" };
+  }
+  try {
+    const org = await getCurrentOrganization();
+    await songService.addSongVideo(org.id, versionId, {
+      label: parsed.data.label.trim(),
+      url: parsed.data.url.trim(),
+    });
+    revalidateSong(songId);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    console.error("addVideoAction", e);
+    return { ok: false, error: "Não foi possível adicionar o vídeo." };
+  }
+}
+
+export async function removeVideoAction(
+  songId: string,
+  videoId: string
+): Promise<ActionResult> {
+  try {
+    const org = await getCurrentOrganization();
+    await songService.removeSongVideo(org.id, videoId);
+    revalidateSong(songId);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    console.error("removeVideoAction", e);
+    return { ok: false, error: "Não foi possível remover o vídeo." };
   }
 }
 

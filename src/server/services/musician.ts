@@ -51,7 +51,12 @@ export async function getMyServiceDetail(
           setlist: {
             include: {
               items: {
-                include: { song: true, version: true },
+                include: {
+                  song: true,
+                  version: {
+                    include: { videos: { orderBy: { sortOrder: "asc" } } },
+                  },
+                },
                 orderBy: { position: "asc" },
               },
             },
@@ -110,7 +115,12 @@ export async function getRehearsalContent(
               items: {
                 include: {
                   song: true,
-                  version: { include: { files: true } },
+                  version: {
+                    include: {
+                      files: true,
+                      videos: { orderBy: { sortOrder: "asc" } },
+                    },
+                  },
                 },
                 orderBy: { position: "asc" },
               },

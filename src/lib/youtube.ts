@@ -33,3 +33,13 @@ export function youtubeThumbnail(id: string): string {
 export function youtubeWatchUrl(id: string): string {
   return `https://www.youtube.com/watch?v=${id}`;
 }
+
+/** URL de incorporação (player embutido no app, sem cookies de rastreio). */
+export function youtubeEmbedUrl(id: string, autoplay = true): string {
+  const params = new URLSearchParams({
+    rel: "0",
+    modestbranding: "1",
+    ...(autoplay ? { autoplay: "1" } : {}),
+  });
+  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
+}

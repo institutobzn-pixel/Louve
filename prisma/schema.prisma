@@ -445,20 +445,33 @@ model Song {
 }
 
 model SongVersion {
-  id         String  @id @default(cuid())
-  songId     String
-  label      String
-  key        String?
-  bpm        Int?
-  notes      String?
-  youtubeUrl String?
+  id     String  @id @default(cuid())
+  songId String
+  label  String
+  key    String?
+  bpm    Int?
+  notes  String?
 
   song         Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
   files        SongFile[]
+  videos       SongVideo[]
   setlistItems SetlistItem[]
 
   @@index([songId])
   @@map("song_versions")
+}
+
+model SongVideo {
+  id        String @id @default(cuid())
+  versionId String
+  label     String
+  url       String
+  sortOrder Int    @default(0)
+
+  version SongVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@map("song_videos")
 }
 
 model SongFile {

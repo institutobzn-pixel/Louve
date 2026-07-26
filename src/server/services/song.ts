@@ -74,7 +74,10 @@ export async function getSongById(organizationId: string, songId: string) {
     where: { id: songId, organizationId },
     include: {
       versions: {
-        include: { files: { orderBy: { name: "asc" } } },
+        include: {
+          files: { orderBy: { name: "asc" } },
+          videos: { orderBy: { sortOrder: "asc" } },
+        },
         orderBy: { label: "asc" },
       },
     },
@@ -88,7 +91,6 @@ export interface VersionInput {
   key?: string | null;
   bpm?: number | null;
   notes?: string | null;
-  youtubeUrl?: string | null;
 }
 
 export async function addSongVersion(
@@ -125,6 +127,40 @@ export async function removeSongVersion(
     await deleteSongFile(file.storagePath);
   }
   return prisma.songVersion.delete({ where: { id: versionId } });
+}
+
+/* ---------- Vídeos (YouTube) ---------- */
+
+export async function addSongVideo(
+  organizationId: string,
+  versionId: string,
+  input: { label: string; url: string }
+) {
+  await prisma.songVersion.findFirstOrThrow({
+    where: { id: versionId, song: { organizationId } },
+  });
+  const last = await prisma.songVideo.findFirst({
+    where: { versionId },
+    orderBy: { sortOrder: "desc" },
+  });
+  return prisma.songVideo.create({
+    data: {
+      versionId,
+      label: input.label,
+      url: input.url,
+      sortOrder: (last?.sortOrder ?? -1) + 1,
+    },
+  });
+}
+
+export async function removeSongVideo(
+  organizationId: string,
+  videoId: string
+) {
+  await prisma.songVideo.findFirstOrThrow({
+    where: { id: videoId, version: { song: { organizationId } } },
+  });
+  return prisma.songVideo.delete({ where: { id: videoId } });
 }
 
 /* ---------- Arquivos ---------- */

@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { VideoGallery } from "@/components/shared/video-gallery";
 import { formatDateLong, formatDuration } from "@/lib/format";
 import { getCurrentMember } from "@/server/member-context";
 import { getCurrentOrganization } from "@/server/org";
@@ -134,33 +135,40 @@ export default async function MeuCultoPage({ params }: PageProps) {
                 {setlistItems.map((item, index) => (
                   <li
                     key={item.id}
-                    className="flex items-center gap-3 rounded-xl border p-3 text-sm"
+                    className="rounded-xl border p-3 text-sm"
                   >
-                    <span className="w-5 text-center font-medium text-muted-foreground">
-                      {index + 1}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium">
-                        {item.song.name}
+                    <div className="flex items-center gap-3">
+                      <span className="w-5 text-center font-medium text-muted-foreground">
+                        {index + 1}
                       </span>
-                      {item.song.artist ? (
-                        <span className="block truncate text-xs text-muted-foreground">
-                          {item.song.artist}
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">
+                          {item.song.name}
                         </span>
-                      ) : null}
-                    </span>
-                    <span className="flex shrink-0 gap-1.5">
-                      {item.keyOverride ? (
-                        <Badge variant="outline" className="font-mono">
-                          {item.keyOverride}
-                        </Badge>
-                      ) : null}
-                      {item.durationSec ? (
-                        <Badge variant="outline" className="font-mono">
-                          {formatDuration(item.durationSec)}
-                        </Badge>
-                      ) : null}
-                    </span>
+                        {item.song.artist ? (
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {item.song.artist}
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="flex shrink-0 gap-1.5">
+                        {item.keyOverride ? (
+                          <Badge variant="outline" className="font-mono">
+                            {item.keyOverride}
+                          </Badge>
+                        ) : null}
+                        {item.durationSec ? (
+                          <Badge variant="outline" className="font-mono">
+                            {formatDuration(item.durationSec)}
+                          </Badge>
+                        ) : null}
+                      </span>
+                    </div>
+                    {item.version && item.version.videos.length > 0 ? (
+                      <div className="mt-3">
+                        <VideoGallery videos={item.version.videos} />
+                      </div>
+                    ) : null}
                   </li>
                 ))}
               </ol>

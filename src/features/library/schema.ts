@@ -29,16 +29,22 @@ export const versionFormSchema = z.object({
     .regex(/^\d{0,3}$/, "BPM inválido")
     .optional(),
   notes: z.string().max(500).optional(),
-  youtubeUrl: z
-    .string()
-    .max(300)
-    .optional()
-    .refine((v) => !v || v.trim() === "" || youtubeVideoId(v) !== null, {
-      message: "Cole um link válido do YouTube (ex.: youtube.com/watch?v=…)",
-    }),
 });
 
 export type VersionFormValues = z.infer<typeof versionFormSchema>;
+
+/** Um vídeo (YouTube) anexado a uma versão, com rótulo. */
+export const videoFormSchema = z.object({
+  label: z.string().min(1, "Dê um nome ao vídeo").max(40),
+  url: z
+    .string()
+    .min(1, "Cole o link do YouTube")
+    .refine((v) => youtubeVideoId(v) !== null, {
+      message: "Link inválido do YouTube (ex.: youtube.com/watch?v=…)",
+    }),
+});
+
+export type VideoFormValues = z.infer<typeof videoFormSchema>;
 
 export const fileKinds = [
   "PLAYBACK",

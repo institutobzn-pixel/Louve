@@ -5,6 +5,7 @@ import { ArrowLeft, Download, FileText, Layers, Music4 } from "lucide-react";
 
 import { AudioPlayer } from "@/components/shared/audio-player";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
+import { VideoGallery } from "@/components/shared/video-gallery";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -152,6 +153,15 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                         Observações
                       </p>
                       {item.notes}
+                    </div>
+                  ) : null}
+
+                  {item.version && item.version.videos.length > 0 ? (
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-medium uppercase text-muted-foreground">
+                        Vídeos de referência
+                      </p>
+                      <VideoGallery videos={item.version.videos} />
                     </div>
                   ) : null}
 

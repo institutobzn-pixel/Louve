@@ -85,6 +85,13 @@ create policy tenant_child on "song_files" for all using (exists (
   where v.id = "song_files"."versionId"
   and s."organizationId" = (auth.jwt() ->> 'organization_id')));
 
+alter table "song_videos" enable row level security;
+drop policy if exists tenant_child on "song_videos";
+create policy tenant_child on "song_videos" for all using (exists (
+  select 1 from "song_versions" v join "songs" s on s.id = v."songId"
+  where v.id = "song_videos"."versionId"
+  and s."organizationId" = (auth.jwt() ->> 'organization_id')));
+
 -- Tabelas filhas de "members" (via "memberId"):
 do $$
 declare t text;
