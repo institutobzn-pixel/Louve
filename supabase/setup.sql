@@ -109,6 +109,7 @@ CREATE TABLE "instruments" (
     "categoryId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "isVocal" BOOLEAN NOT NULL DEFAULT false,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "instruments_pkey" PRIMARY KEY ("id")
@@ -630,7 +631,7 @@ insert into "roles" ("id","key","label","permissions") values
 on conflict ("key") do nothing;
 
 insert into "instrument_categories" ("id","key","label","sortOrder") values
-  ('cat_lideranca','LIDERANCA','Liderança',1),
+  ('cat_lideranca','LIDERANCA','Ministro de Louvor',1),
   ('cat_voz','VOZ','Voz',2),
   ('cat_ritmo','RITMO','Ritmo',3),
   ('cat_harmonia','HARMONIA','Harmonia',4),

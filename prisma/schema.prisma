@@ -175,6 +175,7 @@ model Instrument {
   categoryId     String
   name           String
   isVocal        Boolean @default(false)
+  isActive       Boolean @default(true)
   sortOrder      Int     @default(0)
 
   organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)

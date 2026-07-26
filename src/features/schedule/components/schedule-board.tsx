@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +19,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { InstrumentIcon } from "@/components/shared/instrument-icon";
 import { removeAssignmentAction } from "../actions";
 import type { AssignmentView, ScheduleCategoryView } from "../types";
 import {
@@ -32,14 +32,6 @@ interface ScheduleBoardProps {
   categories: ScheduleCategoryView[];
   /** Apenas escalas ativas (substituídos ficam no histórico). */
   assignments: AssignmentView[];
-}
-
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
 }
 
 /**
@@ -119,11 +111,16 @@ export function ScheduleBoard({
                       key={assignment.id}
                       className="flex items-center gap-3 rounded-xl border bg-card p-3 animate-fade-in-up"
                     >
-                      <Avatar className="h-9 w-9">
-                        <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">
-                          {memberName ? initials(memberName) : "?"}
-                        </AvatarFallback>
-                      </Avatar>
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+                        title={assignment.instrumentName}
+                      >
+                        <InstrumentIcon
+                          name={assignment.instrumentName}
+                          categoryKey={assignment.categoryKey}
+                          className="h-[18px] w-[18px]"
+                        />
+                      </span>
 
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">

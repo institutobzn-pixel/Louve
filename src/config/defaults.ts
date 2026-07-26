@@ -26,7 +26,7 @@ export const defaultCategories: Array<{
   label: string;
   sortOrder: number;
 }> = [
-  { key: "LIDERANCA", label: "Liderança", sortOrder: 1 },
+  { key: "LIDERANCA", label: "Ministro de Louvor", sortOrder: 1 },
   { key: "VOZ", label: "Voz", sortOrder: 2 },
   { key: "RITMO", label: "Ritmo", sortOrder: 3 },
   { key: "HARMONIA", label: "Harmonia", sortOrder: 4 },
