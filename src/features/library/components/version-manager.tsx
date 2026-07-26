@@ -13,9 +13,11 @@ import {
   Loader2,
   Music2,
   Pencil,
+  Play,
   Plus,
   Trash2,
   Upload,
+  Youtube,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -58,6 +60,11 @@ import {
 } from "../schema";
 import { AudioPlayer } from "@/components/shared/audio-player";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
+import {
+  youtubeThumbnail,
+  youtubeVideoId,
+  youtubeWatchUrl,
+} from "@/lib/youtube";
 
 export interface FileView {
   id: string;
@@ -73,6 +80,7 @@ export interface VersionView {
   key: string | null;
   bpm: number | null;
   notes: string | null;
+  youtubeUrl: string | null;
   files: FileView[];
 }
 
@@ -189,6 +197,35 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
               ) : null}
             </CardHeader>
             <CardContent className="space-y-2">
+              {(() => {
+                const videoId = youtubeVideoId(version.youtubeUrl);
+                if (!videoId) return null;
+                return (
+                  <a
+                    href={youtubeWatchUrl(videoId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative block aspect-video w-full max-w-sm overflow-hidden rounded-xl border"
+                    aria-label={`Assistir "${version.label}" no YouTube`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={youtubeThumbnail(videoId)}
+                      alt={`Miniatura do vídeo da versão ${version.label}`}
+                      className="h-full w-full object-cover transition group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/25 transition group-hover:bg-black/35">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-600 text-white shadow-lg">
+                        <Play className="h-6 w-6 translate-x-0.5 fill-current" />
+                      </span>
+                    </span>
+                    <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white">
+                      <Youtube className="h-3.5 w-3.5" /> YouTube
+                    </span>
+                  </a>
+                );
+              })()}
               {(() => {
                 const stems = version.files.filter(
                   (f) =>
@@ -383,6 +420,7 @@ function VersionDialog({
       key: version?.key ?? "",
       bpm: version?.bpm ? String(version.bpm) : "",
       notes: version?.notes ?? "",
+      youtubeUrl: version?.youtubeUrl ?? "",
     },
   });
 
@@ -441,6 +479,26 @@ function VersionDialog({
                 {...form.register("bpm")}
               />
             </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="v-youtube" className="flex items-center gap-1.5">
+              <Youtube className="h-4 w-4 text-red-600" /> Link do YouTube
+            </Label>
+            <Input
+              id="v-youtube"
+              type="url"
+              inputMode="url"
+              placeholder="Ex.: https://youtube.com/watch?v=..."
+              {...form.register("youtubeUrl")}
+            />
+            <p className="text-xs text-muted-foreground">
+              A miniatura do vídeo aparece na versão, para a equipe assistir.
+            </p>
+            {form.formState.errors.youtubeUrl ? (
+              <p className="text-xs text-danger">
+                {form.formState.errors.youtubeUrl.message}
+              </p>
+            ) : null}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="v-notes">Observações</Label>

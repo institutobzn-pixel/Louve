@@ -104,6 +104,7 @@ export default async function SongPage({ params }: PageProps) {
             key: version.key,
             bpm: version.bpm,
             notes: version.notes,
+            youtubeUrl: version.youtubeUrl,
             files: version.files.map((file) => ({
               id: file.id,
               kind: file.kind,

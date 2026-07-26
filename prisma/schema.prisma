@@ -445,12 +445,13 @@ model Song {
 }
 
 model SongVersion {
-  id     String  @id @default(cuid())
-  songId String
-  label  String
-  key    String?
-  bpm    Int?
-  notes  String?
+  id         String  @id @default(cuid())
+  songId     String
+  label      String
+  key        String?
+  bpm        Int?
+  notes      String?
+  youtubeUrl String?
 
   song         Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
   files        SongFile[]

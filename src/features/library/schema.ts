@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { youtubeVideoId } from "@/lib/youtube";
+
 export const songFormSchema = z.object({
   name: z.string().min(1, "Informe o nome da música").max(200),
   artist: z.string().max(120).optional(),
@@ -27,6 +29,13 @@ export const versionFormSchema = z.object({
     .regex(/^\d{0,3}$/, "BPM inválido")
     .optional(),
   notes: z.string().max(500).optional(),
+  youtubeUrl: z
+    .string()
+    .max(300)
+    .optional()
+    .refine((v) => !v || v.trim() === "" || youtubeVideoId(v) !== null, {
+      message: "Cole um link válido do YouTube (ex.: youtube.com/watch?v=…)",
+    }),
 });
 
 export type VersionFormValues = z.infer<typeof versionFormSchema>;

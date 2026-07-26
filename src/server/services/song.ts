@@ -88,6 +88,7 @@ export interface VersionInput {
   key?: string | null;
   bpm?: number | null;
   notes?: string | null;
+  youtubeUrl?: string | null;
 }
 
 export async function addSongVersion(
