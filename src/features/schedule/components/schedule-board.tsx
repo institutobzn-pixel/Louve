@@ -112,7 +112,7 @@ export function ScheduleBoard({
                       className="flex items-center gap-3 rounded-xl border bg-card p-3 animate-fade-in-up"
                     >
                       <span
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-violet-900 text-white shadow-sm ring-1 ring-violet-500/40"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-200 text-violet-600"
                         title={assignment.instrumentName}
                       >
                         <InstrumentIcon

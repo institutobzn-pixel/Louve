@@ -79,7 +79,7 @@ export function InstrumentSettings({
         return (
           <Card key={category.key} className={cn(!anyActive && "opacity-70")}>
             <CardHeader className="flex flex-row items-center gap-3 space-y-0 pb-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-violet-900 text-white shadow-sm ring-1 ring-violet-500/40">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-200 text-violet-600">
                 <InstrumentIcon
                   categoryKey={category.key}
                   className="h-[18px] w-[18px]"
