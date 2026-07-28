@@ -1,9 +1,7 @@
 import {
   Camera,
   Drum,
-  Guitar,
   Lightbulb,
-  Mic,
   Music2,
   Piano,
   Radio,
@@ -15,7 +13,76 @@ interface SvgProps {
   className?: string;
 }
 
-/* Ícones que o lucide não traz — desenhados à mão (sopros e cordas). */
+/* Ícones desenhados à mão — o lucide não traz bons equivalentes. */
+
+/** Microfone retrô estilo Shure 55 ("Elvis"): cápsula com grelha e aro. */
+function RetroMic({ className }: SvgProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="7.6" y="2.6" width="8.8" height="11" rx="4.4" />
+      <path d="M9 6.2h6M9 8.4h6M9 10.6h6" />
+      <path d="M5.8 9a6.2 6.2 0 0 0 12.4 0" />
+      <path d="M12 15.2v3.4" />
+      <path d="M9.2 18.7h5.6" />
+    </svg>
+  );
+}
+
+/** Violão / acústico: corpo redondo com boca, braço e cravelhas. */
+function Violao({ className }: SvgProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M10.3 5.2V2.7h3.4v2.5" />
+      <circle cx="10.4" cy="3.5" r=".5" fill="currentColor" stroke="none" />
+      <circle cx="13.6" cy="3.5" r=".5" fill="currentColor" stroke="none" />
+      <path d="M11.2 5.2v6M12.8 5.2v6" />
+      <path d="M12 11c-3 0-5.2 2-5.2 4.8 0 2.9 2.3 5 5.2 5s5.2-2.1 5.2-5C17.2 13 15 11 12 11Z" />
+      <circle cx="12" cy="15.4" r="1.7" />
+      <path d="M9.9 18.2h4.2" />
+    </svg>
+  );
+}
+
+/** Guitarra elétrica: corpo com recortes (Strat) na diagonal. */
+function Guitarra({ className }: SvgProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M15 3.7 9.5 9.2" />
+      <path
+        d="M14.3 2.2c.6-.6 1.7-.6 2.3 0 .6.6.6 1.7 0 2.3-.4.4-1.1.4-1.1.4s0-.7.4-1.1c.3-.3 0-.9-.5-.8-.5 0-.9.4-.9.9Z"
+        fill="currentColor"
+        stroke="none"
+      />
+      <path d="M10.6 8c-1.3-1.3-3.1-.7-4 .2-1 1-.6 2.3-1.6 3.3-1.2 1.2-3.2 1-3.2 3 0 1.6 1.8 3.4 3.4 3.4 2 0 1.8-2 3-3.2 1-1 2.3-.6 3.3-1.6.9-.9 1.5-2.7.2-4Z" />
+      <path d="M6.1 12 7.9 13.8" />
+    </svg>
+  );
+}
+
 function Sax({ className }: SvgProps) {
   return (
     <svg
@@ -83,14 +150,18 @@ function pickIcon(name?: string, categoryKey?: string) {
   switch (categoryKey) {
     case "LIDERANCA":
     case "VOZ":
-      return Mic;
+      return RetroMic;
     case "RITMO":
     case "PERCUSSAO_ORQUESTRAL":
       return Drum;
     case "HARMONIA":
-      return /teclado|piano|[óo]rg[ãa]o|acorde/.test(n) ? Piano : Guitar;
+      if (/teclado|piano|[óo]rg[ãa]o|acorde/.test(n)) return Piano;
+      if (/guitarra/.test(n)) return Guitarra;
+      return Violao; // violão, ukulele, cavaco…
     case "CORDAS":
-      return /contrabaixo el|baixo|guitarra/.test(n) ? Guitar : Violin;
+      if (/guitarra/.test(n)) return Guitarra;
+      if (/baixo|contrabaixo el/.test(n)) return Guitarra;
+      return Violin;
     case "SOPROS_MADEIRA":
       return Sax;
     case "SOPROS_METAIS":
@@ -106,9 +177,12 @@ function pickIcon(name?: string, categoryKey?: string) {
 
   // Sem categoria — deduz pelo nome.
   if (/bateria|percuss|cajon|pandeiro|tambor/.test(n)) return Drum;
-  if (/viol[ãa]o|guitarra|ukulele|cavaco/.test(n)) return Guitar;
+  if (/guitarra/.test(n)) return Guitarra;
+  if (/viol[ãa]o|ukulele|cavaco/.test(n)) return Violao;
   if (/teclado|piano|[óo]rg[ãa]o|acorde/.test(n)) return Piano;
-  if (/vocal|soprano|contralto|tenor|ministro|voz|backing/.test(n)) return Mic;
+  if (/vocal|soprano|contralto|tenor|ministro|voz|backing/.test(n)) {
+    return RetroMic;
+  }
   return Music2;
 }
 
