@@ -19,7 +19,7 @@ export interface NavItem {
 /** Menu principal do app de gestão (docs/06-navegacao-fluxos.md) */
 export const mainNav: NavItem[] = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Planejamento", href: "/planejamento", icon: CalendarRange },
+  { title: "Escalas", href: "/planejamento", icon: CalendarRange },
   { title: "Biblioteca Musical", href: "/biblioteca", icon: Library },
   { title: "Implantação de Músicas", href: "/implantacao", icon: GitBranch },
   { title: "Equipe", href: "/equipe", icon: Users },

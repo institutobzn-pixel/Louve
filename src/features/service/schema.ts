@@ -11,8 +11,6 @@ export const serviceFormSchema = z.object({
     .or(z.literal(""))
     .optional(),
   typeId: z.string().optional(),
-  theme: z.string().max(200).optional(),
-  pastor: z.string().max(120).optional(),
   worshipLeaderId: z.string().optional(),
   notes: z.string().max(2000).optional(),
 });
@@ -34,8 +32,6 @@ export function toServiceInput(values: ServiceFormValues) {
     date: new Date(`${values.date}T12:00:00.000Z`),
     startTime: values.startTime || null,
     typeId: values.typeId || null,
-    theme: values.theme?.trim() || null,
-    pastor: values.pastor?.trim() || null,
     worshipLeaderId: values.worshipLeaderId || null,
     notes: values.notes?.trim() || null,
   };

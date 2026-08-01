@@ -8,7 +8,7 @@ import {
   getServicesForPlanning,
 } from "@/features/service/queries";
 
-export const metadata: Metadata = { title: "Planejamento" };
+export const metadata: Metadata = { title: "Escalas" };
 export const dynamic = "force-dynamic";
 
 export default async function PlanejamentoPage() {
@@ -27,7 +27,7 @@ export default async function PlanejamentoPage() {
   return (
     <>
       <PageHeader
-        title="Planejamento"
+        title="Escalas"
         description="Planeje cada culto de ponta a ponta: informações, setlist, escala, ensaio e checklist."
         actions={createButton}
       />

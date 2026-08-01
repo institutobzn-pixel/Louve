@@ -89,7 +89,7 @@ export default async function CultoPage({ params }: PageProps) {
       <div className="mb-6">
         <Button variant="ghost" size="sm" asChild className="-ml-2 mb-3">
           <Link href="/planejamento">
-            <ArrowLeft /> Planejamento
+            <ArrowLeft /> Escalas
           </Link>
         </Button>
 
@@ -223,8 +223,6 @@ export default async function CultoPage({ params }: PageProps) {
               date: toDateInputValue(date),
               startTime: service.startTime ?? "",
               typeId: service.typeId ?? "",
-              theme: service.theme ?? "",
-              pastor: service.pastor ?? "",
               worshipLeaderId: service.worshipLeaderId ?? "",
               notes: service.notes ?? "",
             }}
