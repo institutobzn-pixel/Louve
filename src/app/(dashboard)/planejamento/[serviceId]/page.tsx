@@ -5,7 +5,6 @@ import { ArrowLeft, Clock, Mic2, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ServiceActionsMenu } from "@/features/service/components/service-actions-menu";
-import { ServiceInfoForm } from "@/features/service/components/service-info-form";
 import { ServiceStatusPill } from "@/features/service/components/service-status-pill";
 import { ServiceTabs } from "@/features/service/components/service-tabs";
 import { SetlistBoard } from "@/features/setlist/components/setlist-board";
@@ -17,11 +16,8 @@ import { StageMapEditor } from "@/features/facets/components/stage-map-editor";
 import { buildChecklist } from "@/features/facets/checklist";
 import { getInstrumentOptions } from "@/features/team/queries";
 import { findBlockingAvailability } from "@/server/services/availability-check";
-import {
-  getServiceDetail,
-  getServiceFormOptions,
-} from "@/features/service/queries";
-import { formatDateLong, toDateInputValue } from "@/lib/format";
+import { getServiceDetail } from "@/features/service/queries";
+import { formatDateLong } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Culto" };
 export const dynamic = "force-dynamic";
@@ -33,9 +29,8 @@ interface PageProps {
 export default async function CultoPage({ params }: PageProps) {
   const { serviceId } = await params;
 
-  const [service, options, instrumentCategories] = await Promise.all([
+  const [service, instrumentCategories] = await Promise.all([
     getServiceDetail(serviceId),
-    getServiceFormOptions(),
     getInstrumentOptions(),
   ]);
 
@@ -213,20 +208,6 @@ export default async function CultoPage({ params }: PageProps) {
               }))}
             />
           ) : null
-        }
-        infoContent={
-          <ServiceInfoForm
-            serviceId={service.id}
-            typeOptions={options.types}
-            memberOptions={options.members}
-            defaultValues={{
-              date: toDateInputValue(date),
-              startTime: service.startTime ?? "",
-              typeId: service.typeId ?? "",
-              worshipLeaderId: service.worshipLeaderId ?? "",
-              notes: service.notes ?? "",
-            }}
-          />
         }
       />
     </>
