@@ -107,6 +107,7 @@ export async function addVersionAction(
       bpm: parsed.data.bpm ? Number(parsed.data.bpm) : null,
       notes: parsed.data.notes?.trim() || null,
       chordChartUrl: parsed.data.chordChartUrl?.trim() || null,
+      chordChartText: parsed.data.chordChartText?.trim() || null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };
@@ -133,6 +134,7 @@ export async function updateVersionAction(
       bpm: parsed.data.bpm ? Number(parsed.data.bpm) : null,
       notes: parsed.data.notes?.trim() || null,
       chordChartUrl: parsed.data.chordChartUrl?.trim() || null,
+      chordChartText: parsed.data.chordChartText?.trim() || null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };

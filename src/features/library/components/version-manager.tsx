@@ -64,6 +64,7 @@ import {
   type VideoFormValues,
 } from "../schema";
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { ChordChart } from "@/components/shared/chord-chart";
 import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 import { VideoGallery } from "@/components/shared/video-gallery";
@@ -89,6 +90,7 @@ export interface VersionView {
   bpm: number | null;
   notes: string | null;
   chordChartUrl: string | null;
+  chordChartText: string | null;
   videos: VideoView[];
   files: FileView[];
 }
@@ -232,6 +234,12 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
                 </a>
               ) : null}
               {version.bpm ? <Metronome bpm={version.bpm} /> : null}
+              {version.chordChartText ? (
+                <ChordChart
+                  text={version.chordChartText}
+                  originalKey={version.key}
+                />
+              ) : null}
               {version.videos.length > 0 ? (
                 <VideoGallery
                   videos={version.videos}
@@ -526,6 +534,7 @@ function VersionDialog({
       bpm: version?.bpm ? String(version.bpm) : "",
       notes: version?.notes ?? "",
       chordChartUrl: version?.chordChartUrl ?? "",
+      chordChartText: version?.chordChartText ?? "",
     },
   });
 
@@ -603,6 +612,24 @@ function VersionDialog({
                 {form.formState.errors.chordChartUrl.message}
               </p>
             ) : null}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="v-chord-text">Cifra (texto)</Label>
+            <Textarea
+              id="v-chord-text"
+              rows={6}
+              className="font-mono text-[13px]"
+              placeholder={
+                "Cole a cifra com os acordes acima da letra:\n" +
+                "C       G       Am      F\n" +
+                "primeira linha cantada"
+              }
+              {...form.register("chordChartText")}
+            />
+            <p className="text-xs text-muted-foreground">
+              Digitando a cifra aqui, a equipe pode subir e descer o tom no
+              app. Aceita acordes acima da letra ou no meio dela ([G]assim).
+            </p>
           </div>
           <div className="flex justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>

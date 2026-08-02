@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { ChordChart } from "@/components/shared/chord-chart";
 import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 import { VideoGallery } from "@/components/shared/video-gallery";
@@ -168,6 +169,13 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
 
                   {bpm ? <Metronome bpm={bpm} /> : null}
 
+                  {!isDrummer && item.version?.chordChartText ? (
+                    <ChordChart
+                      text={item.version.chordChartText}
+                      originalKey={item.keyOverride ?? item.version.key}
+                    />
+                  ) : null}
+
                   {item.version && item.version.videos.length > 0 ? (
                     <div className="space-y-1.5">
                       <p className="text-xs font-medium uppercase text-muted-foreground">
@@ -237,7 +245,11 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                   {multitrackFiles.length === 0 &&
                   audioFiles.length === 0 &&
                   docFiles.length === 0 &&
-                  !(!isDrummer && item.version?.chordChartUrl) ? (
+                  !bpm &&
+                  !(
+                    !isDrummer &&
+                    (item.version?.chordChartUrl || item.version?.chordChartText)
+                  ) ? (
                     <p className="text-sm text-muted-foreground">
                       Nenhum material da sua função foi enviado para esta
                       música ainda.

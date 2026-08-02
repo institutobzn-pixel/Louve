@@ -45,6 +45,7 @@ export const versionFormSchema = z.object({
       },
       { message: "Cole um link válido (ex.: cifraclub.com.br/...)" }
     ),
+  chordChartText: z.string().max(20000).optional(),
 });
 
 export type VersionFormValues = z.infer<typeof versionFormSchema>;
