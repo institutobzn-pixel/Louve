@@ -64,6 +64,7 @@ import {
   type VideoFormValues,
 } from "../schema";
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 import { VideoGallery } from "@/components/shared/video-gallery";
 
@@ -230,6 +231,7 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
                   <ExternalLink className="h-4 w-4" /> Ver cifra (link externo)
                 </a>
               ) : null}
+              {version.bpm ? <Metronome bpm={version.bpm} /> : null}
               {version.videos.length > 0 ? (
                 <VideoGallery
                   videos={version.videos}

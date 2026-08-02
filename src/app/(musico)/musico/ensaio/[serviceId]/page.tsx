@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 import { VideoGallery } from "@/components/shared/video-gallery";
 import { Badge } from "@/components/ui/badge";
@@ -113,6 +114,8 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                 docKinds.includes(file.kind) &&
                 !file.mimeType?.startsWith("audio/")
             );
+            // O andamento do arranjo manda; a música é o último recurso.
+            const bpm = item.bpmOverride ?? item.version?.bpm ?? item.song.bpm;
 
             return (
               <Card key={item.id}>
@@ -162,6 +165,8 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                       {item.notes}
                     </div>
                   ) : null}
+
+                  {bpm ? <Metronome bpm={bpm} /> : null}
 
                   {item.version && item.version.videos.length > 0 ? (
                     <div className="space-y-1.5">
