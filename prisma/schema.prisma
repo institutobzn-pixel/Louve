@@ -476,10 +476,36 @@ model SongVersion {
   song         Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
   files        SongFile[]
   videos       SongVideo[]
+  sections     SongSection[]
   setlistItems SetlistItem[]
 
   @@index([songId])
   @@map("song_versions")
+}
+
+/**
+ * Trecho do arranjo (Intro, Verso, Refrão, Ponte…). Fica na versão, não
+ * no culto: o arranjo é mapeado uma vez e serve para todos os cultos que
+ * usarem essa versão.
+ */
+model SongSection {
+  id        String  @id @default(cuid())
+  versionId String
+  name      String
+  /**
+   * Duração em compassos, quando a igreja quiser detalhar.
+   */
+  measures  Int?
+  /**
+   * Ex.: "só teclado", "entra bateria", "2x".
+   */
+  notes     String?
+  sortOrder Int     @default(0)
+
+  version SongVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@map("song_sections")
 }
 
 model SongVideo {

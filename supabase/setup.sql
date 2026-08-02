@@ -328,6 +328,18 @@ CREATE TABLE "song_files" (
 );
 
 -- CreateTable
+CREATE TABLE "song_sections" (
+    "id" TEXT NOT NULL,
+    "versionId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "measures" INTEGER,
+    "notes" TEXT,
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "song_sections_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "song_videos" (
     "id" TEXT NOT NULL,
     "versionId" TEXT NOT NULL,
@@ -473,6 +485,9 @@ CREATE INDEX "song_versions_songId_idx" ON "song_versions"("songId");
 CREATE INDEX "song_files_versionId_idx" ON "song_files"("versionId");
 
 -- CreateIndex
+CREATE INDEX "song_sections_versionId_idx" ON "song_sections"("versionId");
+
+-- CreateIndex
 CREATE INDEX "song_videos_versionId_idx" ON "song_videos"("versionId");
 
 -- CreateIndex
@@ -588,6 +603,9 @@ ALTER TABLE "song_versions" ADD CONSTRAINT "song_versions_songId_fkey" FOREIGN K
 
 -- AddForeignKey
 ALTER TABLE "song_files" ADD CONSTRAINT "song_files_versionId_fkey" FOREIGN KEY ("versionId") REFERENCES "song_versions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "song_sections" ADD CONSTRAINT "song_sections_versionId_fkey" FOREIGN KEY ("versionId") REFERENCES "song_versions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "song_videos" ADD CONSTRAINT "song_videos_versionId_fkey" FOREIGN KEY ("versionId") REFERENCES "song_versions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -736,6 +754,13 @@ drop policy if exists tenant_child on "song_videos";
 create policy tenant_child on "song_videos" for all using (exists (
   select 1 from "song_versions" v join "songs" s on s.id = v."songId"
   where v.id = "song_videos"."versionId"
+  and s."organizationId" = (auth.jwt() ->> 'organization_id')));
+
+alter table "song_sections" enable row level security;
+drop policy if exists tenant_child on "song_sections";
+create policy tenant_child on "song_sections" for all using (exists (
+  select 1 from "song_versions" v join "songs" s on s.id = v."songId"
+  where v.id = "song_sections"."versionId"
   and s."organizationId" = (auth.jwt() ->> 'organization_id')));
 
 -- Tabelas filhas de "members" (via memberId):

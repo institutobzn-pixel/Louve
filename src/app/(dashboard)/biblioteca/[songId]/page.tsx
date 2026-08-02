@@ -107,6 +107,12 @@ export default async function SongPage({ params }: PageProps) {
             notes: version.notes,
             chordChartUrl: version.chordChartUrl,
             chordChartText: version.chordChartText,
+            sections: version.sections.map((s) => ({
+              id: s.id,
+              name: s.name,
+              measures: s.measures,
+              notes: s.notes,
+            })),
             videos: version.videos.map((v) => ({
               id: v.id,
               label: v.label,

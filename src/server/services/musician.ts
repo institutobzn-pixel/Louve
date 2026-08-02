@@ -119,6 +119,7 @@ export async function getRehearsalContent(
                     include: {
                       files: true,
                       videos: { orderBy: { sortOrder: "asc" } },
+                      sections: { orderBy: { sortOrder: "asc" } },
                     },
                   },
                 },

@@ -67,7 +67,9 @@ import { AudioPlayer } from "@/components/shared/audio-player";
 import { ChordChart } from "@/components/shared/chord-chart";
 import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
+import type { SectionView } from "@/components/shared/structure-timeline";
 import { VideoGallery } from "@/components/shared/video-gallery";
+import { SectionEditor } from "./section-editor";
 
 export interface FileView {
   id: string;
@@ -92,6 +94,7 @@ export interface VersionView {
   chordChartUrl: string | null;
   chordChartText: string | null;
   videos: VideoView[];
+  sections: SectionView[];
   files: FileView[];
 }
 
@@ -239,6 +242,12 @@ export function VersionManager({
                   <ExternalLink className="h-4 w-4" /> Ver cifra (link externo)
                 </a>
               ) : null}
+              <SectionEditor
+                songId={songId}
+                versionId={version.id}
+                sections={version.sections}
+                bpm={version.bpm}
+              />
               {version.bpm ? <Metronome bpm={version.bpm} /> : null}
               {version.chordChartText ? (
                 <ChordChart

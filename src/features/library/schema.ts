@@ -63,6 +63,29 @@ export const videoFormSchema = z.object({
 
 export type VideoFormValues = z.infer<typeof videoFormSchema>;
 
+/** Um trecho do arranjo (Intro, Verso, Refrão…). */
+export const sectionFormSchema = z.object({
+  name: z.string().min(1, "Dê um nome ao trecho").max(40),
+  measures: z
+    .string()
+    .regex(/^\d{0,3}$/, "Informe o número de compassos")
+    .optional(),
+  notes: z.string().max(120).optional(),
+});
+
+export type SectionFormValues = z.infer<typeof sectionFormSchema>;
+
+/** Sugestões de trecho, na ordem em que costumam aparecer. */
+export const sectionSuggestions = [
+  "Intro",
+  "Verso",
+  "Pré-refrão",
+  "Refrão",
+  "Ponte",
+  "Solo",
+  "Final",
+] as const;
+
 export const fileKinds = [
   "PLAYBACK",
   "PARTITURA",

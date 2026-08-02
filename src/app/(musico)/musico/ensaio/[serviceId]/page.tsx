@@ -14,6 +14,7 @@ import { AudioPlayer } from "@/components/shared/audio-player";
 import { ChordChart } from "@/components/shared/chord-chart";
 import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
+import { StructureTimeline } from "@/components/shared/structure-timeline";
 import { Tuner } from "@/components/shared/tuner";
 import { VideoGallery } from "@/components/shared/video-gallery";
 import { Badge } from "@/components/ui/badge";
@@ -121,6 +122,7 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
             );
             // O andamento do arranjo manda; a música é o último recurso.
             const bpm = item.bpmOverride ?? item.version?.bpm ?? item.song.bpm;
+            const sections = item.version?.sections ?? [];
 
             return (
               <Card key={item.id}>
@@ -155,7 +157,14 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                 </CardHeader>
 
                 <CardContent className="space-y-3">
-                  {isDrummer && item.notes ? (
+                  {/* Estrutura mapeada substitui a anotação solta. */}
+                  {sections.length > 0 ? (
+                    <div className="rounded-xl border bg-muted/40 p-3">
+                      <StructureTimeline sections={sections} bpm={bpm} />
+                    </div>
+                  ) : null}
+
+                  {isDrummer && item.notes && sections.length === 0 ? (
                     <div className="rounded-xl border bg-muted/40 p-3 text-sm">
                       <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">
                         Estrutura
