@@ -14,6 +14,7 @@ import { AudioPlayer } from "@/components/shared/audio-player";
 import { ChordChart } from "@/components/shared/chord-chart";
 import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
+import { Tuner } from "@/components/shared/tuner";
 import { VideoGallery } from "@/components/shared/video-gallery";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -92,6 +93,9 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
           · {assignment.service.type?.name ?? "Culto"}
         </p>
       </div>
+
+      {/* Vale para o ensaio inteiro, não para uma música só. */}
+      <Tuner className="mb-6" />
 
       {items.length === 0 ? (
         <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
