@@ -158,6 +158,11 @@ export default async function CultoPage({ params }: PageProps) {
           <ScheduleBoard
             serviceId={service.id}
             categories={instrumentCategories}
+            service={{
+              title: service.type?.name ?? "Culto",
+              date: formatDateLong(date),
+              startTime: service.startTime,
+            }}
             assignments={service.assignments
               .filter((assignment) => assignment.status !== "SUBSTITUIDO")
               .map((assignment) => {
@@ -171,6 +176,7 @@ export default async function CultoPage({ params }: PageProps) {
                   id: assignment.id,
                   memberId: assignment.memberId,
                   memberName: assignment.member?.name ?? null,
+                  memberPhone: assignment.member?.phone ?? null,
                   instrumentId: assignment.instrumentId,
                   instrumentName: assignment.instrument.name,
                   categoryKey: assignment.instrument.category.key,
