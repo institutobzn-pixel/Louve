@@ -173,6 +173,7 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                     <ChordChart
                       text={item.version.chordChartText}
                       originalKey={item.keyOverride ?? item.version.key}
+                      durationSec={item.durationSec ?? item.song.durationSec}
                     />
                   ) : null}
 

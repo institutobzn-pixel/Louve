@@ -98,6 +98,8 @@ export interface VersionView {
 interface VersionManagerProps {
   songId: string;
   versions: VersionView[];
+  /** Duração da música — calibra a rolagem automática da cifra. */
+  songDurationSec?: number | null;
 }
 
 /** Nome amigável da trilha a partir do arquivo (ex.: "baixo.mp3" → "Baixo"). */
@@ -120,7 +122,11 @@ function kindIcon(kind: FileView["kind"], mime: string | null) {
   return Music2;
 }
 
-export function VersionManager({ songId, versions }: VersionManagerProps) {
+export function VersionManager({
+  songId,
+  versions,
+  songDurationSec,
+}: VersionManagerProps) {
   const router = useRouter();
   const [editing, setEditing] = React.useState<VersionView | "new" | null>(
     null
@@ -238,6 +244,7 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
                 <ChordChart
                   text={version.chordChartText}
                   originalKey={version.key}
+                  durationSec={songDurationSec}
                 />
               ) : null}
               {version.videos.length > 0 ? (

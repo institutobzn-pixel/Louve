@@ -98,6 +98,7 @@ export default async function SongPage({ params }: PageProps) {
 
         <VersionManager
           songId={song.id}
+          songDurationSec={song.durationSec}
           versions={song.versions.map((version) => ({
             id: version.id,
             label: version.label,
