@@ -308,6 +308,7 @@ CREATE TABLE "song_versions" (
     "key" TEXT,
     "bpm" INTEGER,
     "notes" TEXT,
+    "chordChartUrl" TEXT,
 
     CONSTRAINT "song_versions_pkey" PRIMARY KEY ("id")
 );

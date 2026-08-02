@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, FileText, Layers, Music4 } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  ExternalLink,
+  FileText,
+  Layers,
+  Music4,
+} from "lucide-react";
 
 import { AudioPlayer } from "@/components/shared/audio-player";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
@@ -184,8 +191,19 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                     </div>
                   ))}
 
-                  {docFiles.length > 0 ? (
+                  {docFiles.length > 0 || (!isDrummer && item.version?.chordChartUrl) ? (
                     <div className="flex flex-wrap gap-2">
+                      {!isDrummer && item.version?.chordChartUrl ? (
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={item.version.chordChartUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <ExternalLink /> Ver cifra
+                          </a>
+                        </Button>
+                      ) : null}
                       {docFiles.map((file) => (
                         <Button
                           key={file.id}
@@ -213,7 +231,8 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
 
                   {multitrackFiles.length === 0 &&
                   audioFiles.length === 0 &&
-                  docFiles.length === 0 ? (
+                  docFiles.length === 0 &&
+                  !(!isDrummer && item.version?.chordChartUrl) ? (
                     <p className="text-sm text-muted-foreground">
                       Nenhum material da sua função foi enviado para esta
                       música ainda.

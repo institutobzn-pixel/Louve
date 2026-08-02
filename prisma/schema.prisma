@@ -11,7 +11,9 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-/* ---------- Enums ---------- */
+/**
+ * ---------- Enums ----------
+ */
 
 enum RoleKey {
   ADMIN_GERAL
@@ -76,7 +78,9 @@ enum FileKind {
   OUTRO
 }
 
-/* ---------- Tenant ---------- */
+/**
+ * ---------- Tenant ----------
+ */
 
 model Organization {
   id        String   @id @default(cuid())
@@ -113,7 +117,9 @@ model Campus {
   @@map("campuses")
 }
 
-/* ---------- Identidade & RBAC ---------- */
+/**
+ * ---------- Identidade & RBAC ----------
+ */
 
 model User {
   id             String  @id // = Supabase auth.uid
@@ -156,7 +162,9 @@ model UserRole {
   @@map("user_roles")
 }
 
-/* ---------- Equipe & Instrumentos ---------- */
+/**
+ * ---------- Equipe & Instrumentos ----------
+ */
 
 model InstrumentCategory {
   id        String                @id @default(cuid())
@@ -202,12 +210,12 @@ model Member {
   notes          String?
   isActive       Boolean    @default(true)
 
-  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User?              @relation(fields: [userId], references: [id])
-  instruments    MemberInstrument[]
-  availability   Availability[]
-  assignments    Assignment[]
-  ledServices    Service[]          @relation("WorshipLeader")
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?              @relation(fields: [userId], references: [id])
+  instruments  MemberInstrument[]
+  availability Availability[]
+  assignments  Assignment[]
+  ledServices  Service[]          @relation("WorshipLeader")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -243,7 +251,9 @@ model Availability {
   @@map("availability")
 }
 
-/* ---------- CULTO (núcleo) ---------- */
+/**
+ * ---------- CULTO (núcleo) ----------
+ */
 
 model ServiceType {
   id             String @id @default(cuid())
@@ -270,10 +280,10 @@ model Service {
   worshipLeaderId String?
   notes           String?
 
-  organization  Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  campus        Campus?          @relation(fields: [campusId], references: [id])
-  type          ServiceType?     @relation(fields: [typeId], references: [id])
-  worshipLeader Member?          @relation("WorshipLeader", fields: [worshipLeaderId], references: [id])
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campus        Campus?      @relation(fields: [campusId], references: [id])
+  type          ServiceType? @relation(fields: [typeId], references: [id])
+  worshipLeader Member?      @relation("WorshipLeader", fields: [worshipLeaderId], references: [id])
 
   setlist     Setlist?
   assignments Assignment[]
@@ -291,7 +301,9 @@ model Service {
   @@map("services")
 }
 
-/* ---------- Setlist ---------- */
+/**
+ * ---------- Setlist ----------
+ */
 
 model Setlist {
   id        String @id @default(cuid())
@@ -322,7 +334,9 @@ model SetlistItem {
   @@map("setlist_items")
 }
 
-/* ---------- Escala ---------- */
+/**
+ * ---------- Escala ----------
+ */
 
 model Assignment {
   id              String           @id @default(cuid())
@@ -345,7 +359,9 @@ model Assignment {
   @@map("assignments")
 }
 
-/* ---------- Figurino / Palco / Avisos / Checklist ---------- */
+/**
+ * ---------- Figurino / Palco / Avisos / Checklist ----------
+ */
 
 model ClothingPalette {
   id           String  @id @default(cuid())
@@ -416,7 +432,9 @@ model ChecklistItem {
   @@map("checklist_items")
 }
 
-/* ---------- Biblioteca Musical ---------- */
+/**
+ * ---------- Biblioteca Musical ----------
+ */
 
 model Song {
   id             String  @id @default(cuid())
@@ -446,12 +464,13 @@ model Song {
 }
 
 model SongVersion {
-  id     String  @id @default(cuid())
-  songId String
-  label  String
-  key    String?
-  bpm    Int?
-  notes  String?
+  id            String  @id @default(cuid())
+  songId        String
+  label         String
+  key           String?
+  bpm           Int?
+  notes         String?
+  chordChartUrl String?
 
   song         Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
   files        SongFile[]
@@ -513,7 +532,9 @@ model SongTag {
   @@map("song_tags")
 }
 
-/* ---------- Implantação (pipeline) ---------- */
+/**
+ * ---------- Implantação (pipeline) ----------
+ */
 
 model SongImplementation {
   id           String              @id @default(cuid())
@@ -530,7 +551,9 @@ model SongImplementation {
   @@map("song_implementations")
 }
 
-/* ---------- Execuções (relatórios) ---------- */
+/**
+ * ---------- Execuções (relatórios) ----------
+ */
 
 model SongExecution {
   id             String   @id @default(cuid())
@@ -548,7 +571,9 @@ model SongExecution {
   @@map("song_executions")
 }
 
-/* ---------- Comunicação ---------- */
+/**
+ * ---------- Comunicação ----------
+ */
 
 model Announcement {
   id             String    @id @default(cuid())

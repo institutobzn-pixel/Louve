@@ -91,6 +91,7 @@ export interface VersionInput {
   key?: string | null;
   bpm?: number | null;
   notes?: string | null;
+  chordChartUrl?: string | null;
 }
 
 export async function addSongVersion(

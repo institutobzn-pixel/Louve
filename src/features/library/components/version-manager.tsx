@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Disc3,
   Download,
+  ExternalLink,
   FileAudio,
   FileText,
   Layers,
@@ -86,6 +87,7 @@ export interface VersionView {
   key: string | null;
   bpm: number | null;
   notes: string | null;
+  chordChartUrl: string | null;
   videos: VideoView[];
   files: FileView[];
 }
@@ -218,6 +220,16 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
               ) : null}
             </CardHeader>
             <CardContent className="space-y-2">
+              {version.chordChartUrl ? (
+                <a
+                  href={version.chordChartUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" /> Ver cifra (link externo)
+                </a>
+              ) : null}
               {version.videos.length > 0 ? (
                 <VideoGallery
                   videos={version.videos}
@@ -511,6 +523,7 @@ function VersionDialog({
       key: version?.key ?? "",
       bpm: version?.bpm ? String(version.bpm) : "",
       notes: version?.notes ?? "",
+      chordChartUrl: version?.chordChartUrl ?? "",
     },
   });
 
@@ -573,6 +586,21 @@ function VersionDialog({
           <div className="space-y-1.5">
             <Label htmlFor="v-notes">Observações</Label>
             <Textarea id="v-notes" rows={2} {...form.register("notes")} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="v-chord-chart">Link da cifra</Label>
+            <Input
+              id="v-chord-chart"
+              type="url"
+              inputMode="url"
+              placeholder="https://cifraclub.com.br/..."
+              {...form.register("chordChartUrl")}
+            />
+            {form.formState.errors.chordChartUrl ? (
+              <p className="text-xs text-danger">
+                {form.formState.errors.chordChartUrl.message}
+              </p>
+            ) : null}
           </div>
           <div className="flex justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>

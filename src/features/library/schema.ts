@@ -29,6 +29,22 @@ export const versionFormSchema = z.object({
     .regex(/^\d{0,3}$/, "BPM inválido")
     .optional(),
   notes: z.string().max(500).optional(),
+  chordChartUrl: z
+    .string()
+    .max(300)
+    .optional()
+    .refine(
+      (v) => {
+        if (!v || v.trim() === "") return true;
+        try {
+          const u = new URL(v.trim());
+          return u.protocol === "http:" || u.protocol === "https:";
+        } catch {
+          return false;
+        }
+      },
+      { message: "Cole um link válido (ex.: cifraclub.com.br/...)" }
+    ),
 });
 
 export type VersionFormValues = z.infer<typeof versionFormSchema>;
