@@ -110,6 +110,8 @@ export async function addVersionAction(
       notes: parsed.data.notes?.trim() || null,
       chordChartUrl: parsed.data.chordChartUrl?.trim() || null,
       chordChartText: parsed.data.chordChartText?.trim() || null,
+      melodyLowNote: parsed.data.melodyLowNote ?? null,
+      melodyHighNote: parsed.data.melodyHighNote ?? null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };
@@ -137,6 +139,8 @@ export async function updateVersionAction(
       notes: parsed.data.notes?.trim() || null,
       chordChartUrl: parsed.data.chordChartUrl?.trim() || null,
       chordChartText: parsed.data.chordChartText?.trim() || null,
+      melodyLowNote: parsed.data.melodyLowNote ?? null,
+      melodyHighNote: parsed.data.melodyHighNote ?? null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };

@@ -46,6 +46,9 @@ export const versionFormSchema = z.object({
       { message: "Cole um link válido (ex.: cifraclub.com.br/...)" }
     ),
   chordChartText: z.string().max(20000).optional(),
+  /** Extensão da melodia neste tom, em número MIDI (0–127). */
+  melodyLowNote: z.number().int().min(0).max(127).nullable().optional(),
+  melodyHighNote: z.number().int().min(0).max(127).nullable().optional(),
 });
 
 export type VersionFormValues = z.infer<typeof versionFormSchema>;

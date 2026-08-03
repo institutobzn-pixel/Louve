@@ -68,6 +68,7 @@ import { ChordChart } from "@/components/shared/chord-chart";
 import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 import type { SectionView } from "@/components/shared/structure-timeline";
+import { VocalRangeCapture } from "@/components/shared/vocal-range-capture";
 import { VideoGallery } from "@/components/shared/video-gallery";
 import { SectionEditor } from "./section-editor";
 
@@ -93,6 +94,8 @@ export interface VersionView {
   notes: string | null;
   chordChartUrl: string | null;
   chordChartText: string | null;
+  melodyLowNote: number | null;
+  melodyHighNote: number | null;
   videos: VideoView[];
   sections: SectionView[];
   files: FileView[];
@@ -551,6 +554,8 @@ function VersionDialog({
       notes: version?.notes ?? "",
       chordChartUrl: version?.chordChartUrl ?? "",
       chordChartText: version?.chordChartText ?? "",
+      melodyLowNote: version?.melodyLowNote ?? null,
+      melodyHighNote: version?.melodyHighNote ?? null,
     },
   });
 
@@ -647,6 +652,17 @@ function VersionDialog({
               app. Aceita acordes acima da letra ou no meio dela ([G]assim).
             </p>
           </div>
+
+          {/* A extensão da melodia alimenta a sugestão de tom por cantor. */}
+          <VocalRangeCapture
+            variant="melody"
+            low={form.watch("melodyLowNote") ?? null}
+            high={form.watch("melodyHighNote") ?? null}
+            onChange={({ low, high }) => {
+              form.setValue("melodyLowNote", low, { shouldDirty: true });
+              form.setValue("melodyHighNote", high, { shouldDirty: true });
+            }}
+          />
           <div className="flex justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (

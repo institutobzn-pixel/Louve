@@ -120,6 +120,8 @@ export default async function MemberPage({ params }: PageProps) {
                   : "",
                 level: member.level,
                 notes: member.notes ?? "",
+                vocalLowNote: member.vocalLowNote,
+                vocalHighNote: member.vocalHighNote,
               }}
             />
           </CardContent>

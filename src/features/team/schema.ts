@@ -28,6 +28,9 @@ export const memberFormSchema = z.object({
     .optional(),
   level: z.enum(skillLevels),
   notes: z.string().max(1000).optional(),
+  /** Extensão vocal confortável, em número MIDI (0–127). */
+  vocalLowNote: z.number().int().min(0).max(127).nullable().optional(),
+  vocalHighNote: z.number().int().min(0).max(127).nullable().optional(),
 });
 
 export type MemberFormValues = z.infer<typeof memberFormSchema>;
@@ -78,5 +81,7 @@ export function toMemberInput(values: MemberFormValues) {
       : null,
     level: values.level,
     notes: values.notes?.trim() || null,
+    vocalLowNote: values.vocalLowNote ?? null,
+    vocalHighNote: values.vocalHighNote ?? null,
   };
 }

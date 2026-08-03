@@ -94,6 +94,9 @@ export interface VersionInput {
   notes?: string | null;
   chordChartUrl?: string | null;
   chordChartText?: string | null;
+  /** Extensão da melodia neste tom, em número MIDI. */
+  melodyLowNote?: number | null;
+  melodyHighNote?: number | null;
 }
 
 export async function addSongVersion(

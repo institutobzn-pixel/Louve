@@ -209,6 +209,11 @@ model Member {
   level          SkillLevel @default(INTERMEDIARIO)
   notes          String?
   isActive       Boolean    @default(true)
+  /**
+   * Extensão vocal confortável, em número MIDI (60 = Dó central).
+   */
+  vocalLowNote   Int?
+  vocalHighNote  Int?
 
   organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user         User?              @relation(fields: [userId], references: [id])
@@ -472,6 +477,11 @@ model SongVersion {
   notes          String?
   chordChartUrl  String?
   chordChartText String?
+  /**
+   * Extensão da melodia neste tom, em número MIDI (60 = Dó central).
+   */
+  melodyLowNote  Int?
+  melodyHighNote Int?
 
   song         Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
   files        SongFile[]

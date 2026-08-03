@@ -12,6 +12,7 @@ import {
 
 import { AudioPlayer } from "@/components/shared/audio-player";
 import { ChordChart } from "@/components/shared/chord-chart";
+import { KeySuggestionPanel } from "@/components/shared/key-suggestion";
 import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
 import { StructureTimeline } from "@/components/shared/structure-timeline";
@@ -178,6 +179,17 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                       </p>
                       {item.notes}
                     </div>
+                  ) : null}
+
+                  {isVocal ? (
+                    <KeySuggestionPanel
+                      singerName={member.name.trim().split(/\s+/)[0]}
+                      vocalLow={member.vocalLowNote}
+                      vocalHigh={member.vocalHighNote}
+                      melodyLow={item.version?.melodyLowNote ?? null}
+                      melodyHigh={item.version?.melodyHighNote ?? null}
+                      originalKey={item.keyOverride ?? item.version?.key}
+                    />
                   ) : null}
 
                   {bpm ? <Metronome bpm={bpm} /> : null}
