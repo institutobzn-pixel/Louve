@@ -73,6 +73,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Arquivos do PWA (service worker, manifesto, ícones) precisam ser
+    // acessíveis sem sessão — inclusive na própria tela de login, que é
+    // onde a instalação costuma acontecer primeiro.
+    "/((?!_next/static|_next/image|favicon.ico|sw.js|offline.html|manifest.webmanifest|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
