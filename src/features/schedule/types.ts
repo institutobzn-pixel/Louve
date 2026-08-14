@@ -4,6 +4,8 @@ export interface AssignmentView {
   id: string;
   memberId: string | null;
   memberName: string | null;
+  /** Telefone do músico, para o aviso no WhatsApp. */
+  memberPhone: string | null;
   instrumentId: string;
   instrumentName: string;
   categoryKey: string;
@@ -18,4 +20,11 @@ export interface ScheduleCategoryView {
   key: string;
   label: string;
   instruments: Array<{ id: string; name: string }>;
+}
+
+/** Dados do culto usados nas mensagens de aviso (WhatsApp). */
+export interface ScheduleServiceView {
+  title: string;
+  date: string;
+  startTime: string | null;
 }

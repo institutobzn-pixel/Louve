@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   Clock,
+  ExternalLink,
   Megaphone,
   Mic2,
   Music4,
@@ -164,6 +165,16 @@ export default async function MeuCultoPage({ params }: PageProps) {
                         ) : null}
                       </span>
                     </div>
+                    {item.version?.chordChartUrl ? (
+                      <a
+                        href={item.version.chordChartUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" /> Ver cifra
+                      </a>
+                    ) : null}
                     {item.version && item.version.videos.length > 0 ? (
                       <div className="mt-3">
                         <VideoGallery videos={item.version.videos} />

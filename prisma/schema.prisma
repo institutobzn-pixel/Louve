@@ -11,7 +11,9 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-/* ---------- Enums ---------- */
+/**
+ * ---------- Enums ----------
+ */
 
 enum RoleKey {
   ADMIN_GERAL
@@ -76,7 +78,9 @@ enum FileKind {
   OUTRO
 }
 
-/* ---------- Tenant ---------- */
+/**
+ * ---------- Tenant ----------
+ */
 
 model Organization {
   id        String   @id @default(cuid())
@@ -113,7 +117,9 @@ model Campus {
   @@map("campuses")
 }
 
-/* ---------- Identidade & RBAC ---------- */
+/**
+ * ---------- Identidade & RBAC ----------
+ */
 
 model User {
   id             String  @id // = Supabase auth.uid
@@ -156,7 +162,9 @@ model UserRole {
   @@map("user_roles")
 }
 
-/* ---------- Equipe & Instrumentos ---------- */
+/**
+ * ---------- Equipe & Instrumentos ----------
+ */
 
 model InstrumentCategory {
   id        String                @id @default(cuid())
@@ -201,13 +209,18 @@ model Member {
   level          SkillLevel @default(INTERMEDIARIO)
   notes          String?
   isActive       Boolean    @default(true)
+  /**
+   * Extensão vocal confortável, em número MIDI (60 = Dó central).
+   */
+  vocalLowNote   Int?
+  vocalHighNote  Int?
 
-  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User?              @relation(fields: [userId], references: [id])
-  instruments    MemberInstrument[]
-  availability   Availability[]
-  assignments    Assignment[]
-  ledServices    Service[]          @relation("WorshipLeader")
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?              @relation(fields: [userId], references: [id])
+  instruments  MemberInstrument[]
+  availability Availability[]
+  assignments  Assignment[]
+  ledServices  Service[]          @relation("WorshipLeader")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -243,7 +256,9 @@ model Availability {
   @@map("availability")
 }
 
-/* ---------- CULTO (núcleo) ---------- */
+/**
+ * ---------- CULTO (núcleo) ----------
+ */
 
 model ServiceType {
   id             String @id @default(cuid())
@@ -270,10 +285,10 @@ model Service {
   worshipLeaderId String?
   notes           String?
 
-  organization  Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  campus        Campus?          @relation(fields: [campusId], references: [id])
-  type          ServiceType?     @relation(fields: [typeId], references: [id])
-  worshipLeader Member?          @relation("WorshipLeader", fields: [worshipLeaderId], references: [id])
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  campus        Campus?      @relation(fields: [campusId], references: [id])
+  type          ServiceType? @relation(fields: [typeId], references: [id])
+  worshipLeader Member?      @relation("WorshipLeader", fields: [worshipLeaderId], references: [id])
 
   setlist     Setlist?
   assignments Assignment[]
@@ -291,7 +306,9 @@ model Service {
   @@map("services")
 }
 
-/* ---------- Setlist ---------- */
+/**
+ * ---------- Setlist ----------
+ */
 
 model Setlist {
   id        String @id @default(cuid())
@@ -322,7 +339,9 @@ model SetlistItem {
   @@map("setlist_items")
 }
 
-/* ---------- Escala ---------- */
+/**
+ * ---------- Escala ----------
+ */
 
 model Assignment {
   id              String           @id @default(cuid())
@@ -345,7 +364,9 @@ model Assignment {
   @@map("assignments")
 }
 
-/* ---------- Figurino / Palco / Avisos / Checklist ---------- */
+/**
+ * ---------- Figurino / Palco / Avisos / Checklist ----------
+ */
 
 model ClothingPalette {
   id           String  @id @default(cuid())
@@ -416,7 +437,9 @@ model ChecklistItem {
   @@map("checklist_items")
 }
 
-/* ---------- Biblioteca Musical ---------- */
+/**
+ * ---------- Biblioteca Musical ----------
+ */
 
 model Song {
   id             String  @id @default(cuid())
@@ -446,20 +469,53 @@ model Song {
 }
 
 model SongVersion {
-  id     String  @id @default(cuid())
-  songId String
-  label  String
-  key    String?
-  bpm    Int?
-  notes  String?
+  id             String  @id @default(cuid())
+  songId         String
+  label          String
+  key            String?
+  bpm            Int?
+  notes          String?
+  chordChartUrl  String?
+  chordChartText String?
+  /**
+   * Extensão da melodia neste tom, em número MIDI (60 = Dó central).
+   */
+  melodyLowNote  Int?
+  melodyHighNote Int?
 
   song         Song          @relation(fields: [songId], references: [id], onDelete: Cascade)
   files        SongFile[]
   videos       SongVideo[]
+  sections     SongSection[]
   setlistItems SetlistItem[]
 
   @@index([songId])
   @@map("song_versions")
+}
+
+/**
+ * Trecho do arranjo (Intro, Verso, Refrão, Ponte…). Fica na versão, não
+ * no culto: o arranjo é mapeado uma vez e serve para todos os cultos que
+ * usarem essa versão.
+ */
+model SongSection {
+  id        String  @id @default(cuid())
+  versionId String
+  name      String
+  /**
+   * Duração em compassos, quando a igreja quiser detalhar.
+   */
+  measures  Int?
+  /**
+   * Ex.: "só teclado", "entra bateria", "2x".
+   */
+  notes     String?
+  sortOrder Int     @default(0)
+
+  version SongVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@map("song_sections")
 }
 
 model SongVideo {
@@ -513,7 +569,9 @@ model SongTag {
   @@map("song_tags")
 }
 
-/* ---------- Implantação (pipeline) ---------- */
+/**
+ * ---------- Implantação (pipeline) ----------
+ */
 
 model SongImplementation {
   id           String              @id @default(cuid())
@@ -530,7 +588,9 @@ model SongImplementation {
   @@map("song_implementations")
 }
 
-/* ---------- Execuções (relatórios) ---------- */
+/**
+ * ---------- Execuções (relatórios) ----------
+ */
 
 model SongExecution {
   id             String   @id @default(cuid())
@@ -548,7 +608,9 @@ model SongExecution {
   @@map("song_executions")
 }
 
-/* ---------- Comunicação ---------- */
+/**
+ * ---------- Comunicação ----------
+ */
 
 model Announcement {
   id             String    @id @default(cuid())

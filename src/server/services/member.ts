@@ -11,6 +11,9 @@ export interface MemberInput {
   birthday?: Date | null;
   level?: SkillLevel;
   notes?: string | null;
+  /** Extensão vocal confortável, em número MIDI. */
+  vocalLowNote?: number | null;
+  vocalHighNote?: number | null;
 }
 
 export async function createMember(organizationId: string, input: MemberInput) {

@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import {
   CalendarX2,
   CheckCheck,
+  MessageCircle,
   Plus,
+  Share2,
   UserRoundX,
   UsersRound,
   X,
@@ -20,8 +22,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InstrumentIcon } from "@/components/shared/instrument-icon";
+import {
+  buildAssignmentMessage,
+  buildScheduleMessage,
+  whatsappLink,
+} from "@/lib/whatsapp";
 import { removeAssignmentAction } from "../actions";
-import type { AssignmentView, ScheduleCategoryView } from "../types";
+import type {
+  AssignmentView,
+  ScheduleCategoryView,
+  ScheduleServiceView,
+} from "../types";
 import {
   MemberPickerDialog,
   type PickerState,
@@ -32,6 +43,8 @@ interface ScheduleBoardProps {
   categories: ScheduleCategoryView[];
   /** Apenas escalas ativas (substituídos ficam no histórico). */
   assignments: AssignmentView[];
+  /** Dados do culto usados nas mensagens de aviso (WhatsApp). */
+  service: ScheduleServiceView;
 }
 
 /**
@@ -43,6 +56,7 @@ export function ScheduleBoard({
   serviceId,
   categories,
   assignments,
+  service,
 }: ScheduleBoardProps) {
   const router = useRouter();
   const [picker, setPicker] = React.useState<PickerState | null>(null);
@@ -66,9 +80,20 @@ export function ScheduleBoard({
     }
   }
 
+  // Resumo da escala inteira, na ordem das categorias, para o grupo.
+  const groupMessage = buildScheduleMessage(
+    service,
+    categories.flatMap((category) =>
+      (byCategory.get(category.key) ?? []).map((a) => ({
+        instrumentName: a.instrumentName,
+        memberName: a.memberName,
+      }))
+    )
+  );
+
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <UsersRound className="h-4 w-4" />
           {assignments.length} escalado{assignments.length === 1 ? "" : "s"}
@@ -78,6 +103,17 @@ export function ScheduleBoard({
             <CalendarX2 className="h-4 w-4" />
             {unavailable} com indisponibilidade
           </span>
+        ) : null}
+        {assignments.length > 0 ? (
+          <Button variant="outline" size="sm" className="ml-auto" asChild>
+            <a
+              href={whatsappLink(groupMessage)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Share2 /> Enviar escala pro grupo
+            </a>
+          </Button>
         ) : null}
       </div>
 
@@ -112,7 +148,7 @@ export function ScheduleBoard({
                       className="flex items-center gap-3 rounded-xl border bg-card p-3 animate-fade-in-up"
                     >
                       <span
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-200 text-violet-600"
                         title={assignment.instrumentName}
                       >
                         <InstrumentIcon
@@ -160,6 +196,40 @@ export function ScheduleBoard({
                             {assignment.seen
                               ? "Visualizou a escala no app"
                               : "Ainda não viu a escala"}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : null}
+
+                      {memberName ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              aria-label={`Avisar ${memberName} no WhatsApp`}
+                              className="text-muted-foreground hover:text-success"
+                              asChild
+                            >
+                              <a
+                                href={whatsappLink(
+                                  buildAssignmentMessage(
+                                    memberName,
+                                    assignment.instrumentName,
+                                    service
+                                  ),
+                                  assignment.memberPhone
+                                )}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                              </a>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {assignment.memberPhone
+                              ? "Avisar no WhatsApp"
+                              : "Avisar no WhatsApp (sem telefone cadastrado — escolha o contato)"}
                           </TooltipContent>
                         </Tooltip>
                       ) : null}

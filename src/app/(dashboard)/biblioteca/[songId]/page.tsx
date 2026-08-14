@@ -98,12 +98,23 @@ export default async function SongPage({ params }: PageProps) {
 
         <VersionManager
           songId={song.id}
+          songDurationSec={song.durationSec}
           versions={song.versions.map((version) => ({
             id: version.id,
             label: version.label,
             key: version.key,
             bpm: version.bpm,
             notes: version.notes,
+            chordChartUrl: version.chordChartUrl,
+            chordChartText: version.chordChartText,
+            melodyLowNote: version.melodyLowNote,
+            melodyHighNote: version.melodyHighNote,
+            sections: version.sections.map((s) => ({
+              id: s.id,
+              name: s.name,
+              measures: s.measures,
+              notes: s.notes,
+            })),
             videos: version.videos.map((v) => ({
               id: v.id,
               label: v.label,

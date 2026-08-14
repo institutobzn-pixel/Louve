@@ -2,7 +2,6 @@
 
 import {
   CheckSquare,
-  Info,
   ListMusic,
   MapPin,
   Megaphone,
@@ -13,12 +12,9 @@ import {
 
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ServiceTabsProps {
-  /** Conteúdo da aba Informações (formulário RSC-hidratado). */
-  infoContent: React.ReactNode;
   /** Conteúdo da aba Setlist (board drag-and-drop). */
   setlistContent: React.ReactNode;
   /** Conteúdo da aba Escala (board por categorias). */
@@ -37,12 +33,11 @@ interface ServiceTabsProps {
 
 /**
  * Abas da página exclusiva do culto (docs/06-navegacao-fluxos.md).
- * Todas as facetas do culto convergem aqui: Informações, Escala, Setlist,
- * Modo Ensaio (link para o app do músico), Paleta, Mapa de Palco, Avisos
- * e Checklist.
+ * Informações só é preenchida na criação do culto — aqui convergem as
+ * demais facetas: Escala, Setlist, Modo Ensaio (link para o app do
+ * músico), Paleta, Mapa de Palco, Avisos e Checklist.
  */
 export function ServiceTabs({
-  infoContent,
   setlistContent,
   scheduleContent,
   paletteContent,
@@ -52,12 +47,9 @@ export function ServiceTabs({
   rehearsalHref,
 }: ServiceTabsProps) {
   return (
-    <Tabs defaultValue="informacoes">
+    <Tabs defaultValue="escala">
       <div className="overflow-x-auto pb-1">
         <TabsList className="h-auto flex-wrap">
-          <TabsTrigger value="informacoes">
-            <Info className="h-4 w-4" /> Informações
-          </TabsTrigger>
           <TabsTrigger value="escala">
             <Users className="h-4 w-4" /> Escala
           </TabsTrigger>
@@ -81,12 +73,6 @@ export function ServiceTabs({
           </TabsTrigger>
         </TabsList>
       </div>
-
-      <TabsContent value="informacoes">
-        <Card>
-          <CardContent className="pt-6">{infoContent}</CardContent>
-        </Card>
-      </TabsContent>
 
       <TabsContent value="escala">{scheduleContent}</TabsContent>
 

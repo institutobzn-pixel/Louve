@@ -74,6 +74,20 @@ export function SignUpForm() {
         {form.formState.isSubmitting ? <Loader2 className="animate-spin" /> : null}
         Criar conta
       </Button>
+      <p className="text-center text-xs text-muted-foreground">
+        Ao criar a conta, você concorda com os{" "}
+        <Link href="/termos" className="text-primary underline-offset-2 hover:underline">
+          Termos de Uso
+        </Link>{" "}
+        e a{" "}
+        <Link
+          href="/privacidade"
+          className="text-primary underline-offset-2 hover:underline"
+        >
+          Política de Privacidade
+        </Link>
+        .
+      </p>
       <p className="text-center text-sm text-muted-foreground">
         Já tem conta?{" "}
         <Link href="/login" className="text-primary underline-offset-2 hover:underline">

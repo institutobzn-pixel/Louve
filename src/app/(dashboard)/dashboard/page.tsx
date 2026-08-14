@@ -90,7 +90,7 @@ export default async function DashboardPage() {
               <EmptyState
                 icon={CalendarRange}
                 title="Nenhum culto planejado"
-                description="Comece planejando um culto no módulo Planejamento."
+                description="Comece planejando um culto no módulo Escalas."
                 className="py-10"
               />
             ) : (

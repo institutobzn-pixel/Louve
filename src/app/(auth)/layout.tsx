@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Logo } from "@/components/layout/logo";
 
 export default function AuthLayout({
@@ -11,6 +13,15 @@ export default function AuthLayout({
       <div className="w-full max-w-sm">{children}</div>
       <p className="mt-8 text-xs text-muted-foreground">
         Plataforma de gestão para ministérios de louvor
+      </p>
+      <p className="mt-2 flex gap-3 text-xs text-muted-foreground">
+        <Link href="/termos" className="hover:text-foreground">
+          Termos de Uso
+        </Link>
+        <span aria-hidden>·</span>
+        <Link href="/privacidade" className="hover:text-foreground">
+          Política de Privacidade
+        </Link>
       </p>
     </div>
   );

@@ -1,10 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, FileText, Layers, Music4 } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  ExternalLink,
+  FileText,
+  Layers,
+  Music4,
+} from "lucide-react";
 
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { ChordChart } from "@/components/shared/chord-chart";
+import { KeySuggestionPanel } from "@/components/shared/key-suggestion";
+import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
+import { StructureTimeline } from "@/components/shared/structure-timeline";
+import { Tuner } from "@/components/shared/tuner";
 import { VideoGallery } from "@/components/shared/video-gallery";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -84,6 +96,9 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
         </p>
       </div>
 
+      {/* Vale para o ensaio inteiro, não para uma música só. */}
+      <Tuner className="mb-6" />
+
       {items.length === 0 ? (
         <p className="rounded-xl border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
           O setlist deste culto ainda não foi montado.
@@ -106,6 +121,9 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                 docKinds.includes(file.kind) &&
                 !file.mimeType?.startsWith("audio/")
             );
+            // O andamento do arranjo manda; a música é o último recurso.
+            const bpm = item.bpmOverride ?? item.version?.bpm ?? item.song.bpm;
+            const sections = item.version?.sections ?? [];
 
             return (
               <Card key={item.id}>
@@ -140,7 +158,14 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                 </CardHeader>
 
                 <CardContent className="space-y-3">
-                  {isDrummer && item.notes ? (
+                  {/* Estrutura mapeada substitui a anotação solta. */}
+                  {sections.length > 0 ? (
+                    <div className="rounded-xl border bg-muted/40 p-3">
+                      <StructureTimeline sections={sections} bpm={bpm} />
+                    </div>
+                  ) : null}
+
+                  {isDrummer && item.notes && sections.length === 0 ? (
                     <div className="rounded-xl border bg-muted/40 p-3 text-sm">
                       <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">
                         Estrutura
@@ -154,6 +179,27 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                       </p>
                       {item.notes}
                     </div>
+                  ) : null}
+
+                  {isVocal ? (
+                    <KeySuggestionPanel
+                      singerName={member.name.trim().split(/\s+/)[0]}
+                      vocalLow={member.vocalLowNote}
+                      vocalHigh={member.vocalHighNote}
+                      melodyLow={item.version?.melodyLowNote ?? null}
+                      melodyHigh={item.version?.melodyHighNote ?? null}
+                      originalKey={item.keyOverride ?? item.version?.key}
+                    />
+                  ) : null}
+
+                  {bpm ? <Metronome bpm={bpm} /> : null}
+
+                  {!isDrummer && item.version?.chordChartText ? (
+                    <ChordChart
+                      text={item.version.chordChartText}
+                      originalKey={item.keyOverride ?? item.version.key}
+                      durationSec={item.durationSec ?? item.song.durationSec}
+                    />
                   ) : null}
 
                   {item.version && item.version.videos.length > 0 ? (
@@ -184,8 +230,19 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
                     </div>
                   ))}
 
-                  {docFiles.length > 0 ? (
+                  {docFiles.length > 0 || (!isDrummer && item.version?.chordChartUrl) ? (
                     <div className="flex flex-wrap gap-2">
+                      {!isDrummer && item.version?.chordChartUrl ? (
+                        <Button variant="outline" size="sm" asChild>
+                          <a
+                            href={item.version.chordChartUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <ExternalLink /> Ver cifra
+                          </a>
+                        </Button>
+                      ) : null}
                       {docFiles.map((file) => (
                         <Button
                           key={file.id}
@@ -213,7 +270,12 @@ export default async function ModoEnsaioPage({ params }: PageProps) {
 
                   {multitrackFiles.length === 0 &&
                   audioFiles.length === 0 &&
-                  docFiles.length === 0 ? (
+                  docFiles.length === 0 &&
+                  !bpm &&
+                  !(
+                    !isDrummer &&
+                    (item.version?.chordChartUrl || item.version?.chordChartText)
+                  ) ? (
                     <p className="text-sm text-muted-foreground">
                       Nenhum material da sua função foi enviado para esta
                       música ainda.

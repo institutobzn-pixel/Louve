@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { VocalRangeCapture } from "@/components/shared/vocal-range-capture";
 import {
   memberFormSchema,
   skillLevelLabels,
@@ -100,6 +101,15 @@ export function MemberForm({
           </Select>
         </div>
       </div>
+
+      <VocalRangeCapture
+        low={watch("vocalLowNote") ?? null}
+        high={watch("vocalHighNote") ?? null}
+        onChange={({ low, high }) => {
+          setValue("vocalLowNote", low, { shouldDirty: true });
+          setValue("vocalHighNote", high, { shouldDirty: true });
+        }}
+      />
 
       <div className="space-y-1.5">
         <Label htmlFor="m-notes">Observações</Label>

@@ -8,7 +8,13 @@ const supabaseConfigured = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-const PUBLIC_PATHS = ["/login", "/signup", "/auth"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/auth",
+  "/termos",
+  "/privacidade",
+];
 
 /**
  * Middleware de sessão + gate de rotas (docs/09).
@@ -67,6 +73,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Arquivos do PWA (service worker, manifesto, ícones) precisam ser
+    // acessíveis sem sessão — inclusive na própria tela de login, que é
+    // onde a instalação costuma acontecer primeiro.
+    "/((?!_next/static|_next/image|favicon.ico|sw.js|offline.html|manifest.webmanifest|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

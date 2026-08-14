@@ -37,8 +37,7 @@ const NONE = "__none__";
 
 /**
  * Formulário de informações do culto — compartilhado entre a criação
- * (dialog) e a edição (aba Informações). Campos do prompt-mestre:
- * data, horário, tipo, pastor, ministro de louvor, tema, observações.
+ * (dialog) e a edição (aba Informações).
  */
 export function ServiceForm({
   defaultValues,
@@ -53,8 +52,6 @@ export function ServiceForm({
       date: "",
       startTime: "",
       typeId: "",
-      theme: "",
-      pastor: "",
       worshipLeaderId: "",
       notes: "",
       ...defaultValues,
@@ -135,24 +132,6 @@ export function ServiceForm({
             </SelectContent>
           </Select>
         </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="pastor">Pastor</Label>
-        <Input
-          id="pastor"
-          placeholder="Quem ministra a palavra"
-          {...register("pastor")}
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="theme">Tema</Label>
-        <Input
-          id="theme"
-          placeholder="Tema ou direção do culto"
-          {...register("theme")}
-        />
       </div>
 
       <div className="space-y-1.5">

@@ -5,7 +5,6 @@ import { ArrowLeft, Clock, Mic2, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ServiceActionsMenu } from "@/features/service/components/service-actions-menu";
-import { ServiceInfoForm } from "@/features/service/components/service-info-form";
 import { ServiceStatusPill } from "@/features/service/components/service-status-pill";
 import { ServiceTabs } from "@/features/service/components/service-tabs";
 import { SetlistBoard } from "@/features/setlist/components/setlist-board";
@@ -17,11 +16,8 @@ import { StageMapEditor } from "@/features/facets/components/stage-map-editor";
 import { buildChecklist } from "@/features/facets/checklist";
 import { getInstrumentOptions } from "@/features/team/queries";
 import { findBlockingAvailability } from "@/server/services/availability-check";
-import {
-  getServiceDetail,
-  getServiceFormOptions,
-} from "@/features/service/queries";
-import { formatDateLong, toDateInputValue } from "@/lib/format";
+import { getServiceDetail } from "@/features/service/queries";
+import { formatDateLong } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Culto" };
 export const dynamic = "force-dynamic";
@@ -33,9 +29,8 @@ interface PageProps {
 export default async function CultoPage({ params }: PageProps) {
   const { serviceId } = await params;
 
-  const [service, options, instrumentCategories] = await Promise.all([
+  const [service, instrumentCategories] = await Promise.all([
     getServiceDetail(serviceId),
-    getServiceFormOptions(),
     getInstrumentOptions(),
   ]);
 
@@ -89,7 +84,7 @@ export default async function CultoPage({ params }: PageProps) {
       <div className="mb-6">
         <Button variant="ghost" size="sm" asChild className="-ml-2 mb-3">
           <Link href="/planejamento">
-            <ArrowLeft /> Planejamento
+            <ArrowLeft /> Escalas
           </Link>
         </Button>
 
@@ -163,6 +158,11 @@ export default async function CultoPage({ params }: PageProps) {
           <ScheduleBoard
             serviceId={service.id}
             categories={instrumentCategories}
+            service={{
+              title: service.type?.name ?? "Culto",
+              date: formatDateLong(date),
+              startTime: service.startTime,
+            }}
             assignments={service.assignments
               .filter((assignment) => assignment.status !== "SUBSTITUIDO")
               .map((assignment) => {
@@ -176,6 +176,7 @@ export default async function CultoPage({ params }: PageProps) {
                   id: assignment.id,
                   memberId: assignment.memberId,
                   memberName: assignment.member?.name ?? null,
+                  memberPhone: assignment.member?.phone ?? null,
                   instrumentId: assignment.instrumentId,
                   instrumentName: assignment.instrument.name,
                   categoryKey: assignment.instrument.category.key,
@@ -213,22 +214,6 @@ export default async function CultoPage({ params }: PageProps) {
               }))}
             />
           ) : null
-        }
-        infoContent={
-          <ServiceInfoForm
-            serviceId={service.id}
-            typeOptions={options.types}
-            memberOptions={options.members}
-            defaultValues={{
-              date: toDateInputValue(date),
-              startTime: service.startTime ?? "",
-              typeId: service.typeId ?? "",
-              theme: service.theme ?? "",
-              pastor: service.pastor ?? "",
-              worshipLeaderId: service.worshipLeaderId ?? "",
-              notes: service.notes ?? "",
-            }}
-          />
         }
       />
     </>

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Disc3,
   Download,
+  ExternalLink,
   FileAudio,
   FileText,
   Layers,
@@ -63,8 +64,13 @@ import {
   type VideoFormValues,
 } from "../schema";
 import { AudioPlayer } from "@/components/shared/audio-player";
+import { ChordChart } from "@/components/shared/chord-chart";
+import { Metronome } from "@/components/shared/metronome";
 import { MultitrackMixer } from "@/components/shared/multitrack-mixer";
+import type { SectionView } from "@/components/shared/structure-timeline";
+import { VocalRangeCapture } from "@/components/shared/vocal-range-capture";
 import { VideoGallery } from "@/components/shared/video-gallery";
+import { SectionEditor } from "./section-editor";
 
 export interface FileView {
   id: string;
@@ -86,13 +92,20 @@ export interface VersionView {
   key: string | null;
   bpm: number | null;
   notes: string | null;
+  chordChartUrl: string | null;
+  chordChartText: string | null;
+  melodyLowNote: number | null;
+  melodyHighNote: number | null;
   videos: VideoView[];
+  sections: SectionView[];
   files: FileView[];
 }
 
 interface VersionManagerProps {
   songId: string;
   versions: VersionView[];
+  /** Duração da música — calibra a rolagem automática da cifra. */
+  songDurationSec?: number | null;
 }
 
 /** Nome amigável da trilha a partir do arquivo (ex.: "baixo.mp3" → "Baixo"). */
@@ -115,7 +128,11 @@ function kindIcon(kind: FileView["kind"], mime: string | null) {
   return Music2;
 }
 
-export function VersionManager({ songId, versions }: VersionManagerProps) {
+export function VersionManager({
+  songId,
+  versions,
+  songDurationSec,
+}: VersionManagerProps) {
   const router = useRouter();
   const [editing, setEditing] = React.useState<VersionView | "new" | null>(
     null
@@ -218,6 +235,30 @@ export function VersionManager({ songId, versions }: VersionManagerProps) {
               ) : null}
             </CardHeader>
             <CardContent className="space-y-2">
+              {version.chordChartUrl ? (
+                <a
+                  href={version.chordChartUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                >
+                  <ExternalLink className="h-4 w-4" /> Ver cifra (link externo)
+                </a>
+              ) : null}
+              <SectionEditor
+                songId={songId}
+                versionId={version.id}
+                sections={version.sections}
+                bpm={version.bpm}
+              />
+              {version.bpm ? <Metronome bpm={version.bpm} /> : null}
+              {version.chordChartText ? (
+                <ChordChart
+                  text={version.chordChartText}
+                  originalKey={version.key}
+                  durationSec={songDurationSec}
+                />
+              ) : null}
               {version.videos.length > 0 ? (
                 <VideoGallery
                   videos={version.videos}
@@ -511,6 +552,10 @@ function VersionDialog({
       key: version?.key ?? "",
       bpm: version?.bpm ? String(version.bpm) : "",
       notes: version?.notes ?? "",
+      chordChartUrl: version?.chordChartUrl ?? "",
+      chordChartText: version?.chordChartText ?? "",
+      melodyLowNote: version?.melodyLowNote ?? null,
+      melodyHighNote: version?.melodyHighNote ?? null,
     },
   });
 
@@ -574,6 +619,50 @@ function VersionDialog({
             <Label htmlFor="v-notes">Observações</Label>
             <Textarea id="v-notes" rows={2} {...form.register("notes")} />
           </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="v-chord-chart">Link da cifra</Label>
+            <Input
+              id="v-chord-chart"
+              type="url"
+              inputMode="url"
+              placeholder="https://cifraclub.com.br/..."
+              {...form.register("chordChartUrl")}
+            />
+            {form.formState.errors.chordChartUrl ? (
+              <p className="text-xs text-danger">
+                {form.formState.errors.chordChartUrl.message}
+              </p>
+            ) : null}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="v-chord-text">Cifra (texto)</Label>
+            <Textarea
+              id="v-chord-text"
+              rows={6}
+              className="font-mono text-[13px]"
+              placeholder={
+                "Cole a cifra com os acordes acima da letra:\n" +
+                "C       G       Am      F\n" +
+                "primeira linha cantada"
+              }
+              {...form.register("chordChartText")}
+            />
+            <p className="text-xs text-muted-foreground">
+              Digitando a cifra aqui, a equipe pode subir e descer o tom no
+              app. Aceita acordes acima da letra ou no meio dela ([G]assim).
+            </p>
+          </div>
+
+          {/* A extensão da melodia alimenta a sugestão de tom por cantor. */}
+          <VocalRangeCapture
+            variant="melody"
+            low={form.watch("melodyLowNote") ?? null}
+            high={form.watch("melodyHighNote") ?? null}
+            onChange={({ low, high }) => {
+              form.setValue("melodyLowNote", low, { shouldDirty: true });
+              form.setValue("melodyHighNote", high, { shouldDirty: true });
+            }}
+          />
           <div className="flex justify-end">
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (

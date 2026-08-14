@@ -77,6 +77,7 @@ export async function getSongById(organizationId: string, songId: string) {
         include: {
           files: { orderBy: { name: "asc" } },
           videos: { orderBy: { sortOrder: "asc" } },
+          sections: { orderBy: { sortOrder: "asc" } },
         },
         orderBy: { label: "asc" },
       },
@@ -91,6 +92,11 @@ export interface VersionInput {
   key?: string | null;
   bpm?: number | null;
   notes?: string | null;
+  chordChartUrl?: string | null;
+  chordChartText?: string | null;
+  /** Extensão da melodia neste tom, em número MIDI. */
+  melodyLowNote?: number | null;
+  melodyHighNote?: number | null;
 }
 
 export async function addSongVersion(
@@ -161,6 +167,84 @@ export async function removeSongVideo(
     where: { id: videoId, version: { song: { organizationId } } },
   });
   return prisma.songVideo.delete({ where: { id: videoId } });
+}
+
+/* ---------- Estrutura do arranjo ---------- */
+
+export interface SectionInput {
+  name: string;
+  measures?: number | null;
+  notes?: string | null;
+}
+
+export async function addSongSection(
+  organizationId: string,
+  versionId: string,
+  input: SectionInput
+) {
+  await prisma.songVersion.findFirstOrThrow({
+    where: { id: versionId, song: { organizationId } },
+  });
+  const last = await prisma.songSection.findFirst({
+    where: { versionId },
+    orderBy: { sortOrder: "desc" },
+  });
+  return prisma.songSection.create({
+    data: {
+      versionId,
+      name: input.name,
+      measures: input.measures ?? null,
+      notes: input.notes ?? null,
+      sortOrder: (last?.sortOrder ?? -1) + 1,
+    },
+  });
+}
+
+export async function updateSongSection(
+  organizationId: string,
+  sectionId: string,
+  input: SectionInput
+) {
+  await prisma.songSection.findFirstOrThrow({
+    where: { id: sectionId, version: { song: { organizationId } } },
+  });
+  return prisma.songSection.update({
+    where: { id: sectionId },
+    data: {
+      name: input.name,
+      measures: input.measures ?? null,
+      notes: input.notes ?? null,
+    },
+  });
+}
+
+export async function removeSongSection(
+  organizationId: string,
+  sectionId: string
+) {
+  await prisma.songSection.findFirstOrThrow({
+    where: { id: sectionId, version: { song: { organizationId } } },
+  });
+  return prisma.songSection.delete({ where: { id: sectionId } });
+}
+
+/** Reordena os trechos na ordem recebida (arrastar para cima/baixo). */
+export async function reorderSongSections(
+  organizationId: string,
+  versionId: string,
+  sectionIds: string[]
+) {
+  await prisma.songVersion.findFirstOrThrow({
+    where: { id: versionId, song: { organizationId } },
+  });
+  await prisma.$transaction(
+    sectionIds.map((id, index) =>
+      prisma.songSection.updateMany({
+        where: { id, versionId },
+        data: { sortOrder: index },
+      })
+    )
+  );
 }
 
 /* ---------- Arquivos ---------- */

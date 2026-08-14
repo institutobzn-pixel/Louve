@@ -6,9 +6,11 @@ import { parseDurationToSeconds } from "@/lib/format";
 import { getCurrentOrganization } from "@/server/org";
 import * as songService from "@/server/services/song";
 import {
+  sectionFormSchema,
   songFormSchema,
   versionFormSchema,
   videoFormSchema,
+  type SectionFormValues,
   type SongFormValues,
   type VersionFormValues,
   type VideoFormValues,
@@ -106,6 +108,10 @@ export async function addVersionAction(
       key: parsed.data.key?.trim() || null,
       bpm: parsed.data.bpm ? Number(parsed.data.bpm) : null,
       notes: parsed.data.notes?.trim() || null,
+      chordChartUrl: parsed.data.chordChartUrl?.trim() || null,
+      chordChartText: parsed.data.chordChartText?.trim() || null,
+      melodyLowNote: parsed.data.melodyLowNote ?? null,
+      melodyHighNote: parsed.data.melodyHighNote ?? null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };
@@ -131,6 +137,10 @@ export async function updateVersionAction(
       key: parsed.data.key?.trim() || null,
       bpm: parsed.data.bpm ? Number(parsed.data.bpm) : null,
       notes: parsed.data.notes?.trim() || null,
+      chordChartUrl: parsed.data.chordChartUrl?.trim() || null,
+      chordChartText: parsed.data.chordChartText?.trim() || null,
+      melodyLowNote: parsed.data.melodyLowNote ?? null,
+      melodyHighNote: parsed.data.melodyHighNote ?? null,
     });
     revalidateSong(songId);
     return { ok: true, data: undefined };
@@ -194,6 +204,85 @@ export async function removeVideoAction(
   } catch (e) {
     console.error("removeVideoAction", e);
     return { ok: false, error: "Não foi possível remover o vídeo." };
+  }
+}
+
+export async function addSectionAction(
+  songId: string,
+  versionId: string,
+  values: SectionFormValues
+): Promise<ActionResult> {
+  const parsed = sectionFormSchema.safeParse(values);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos" };
+  }
+  try {
+    const org = await getCurrentOrganization();
+    await songService.addSongSection(org.id, versionId, {
+      name: parsed.data.name.trim(),
+      measures: parsed.data.measures ? Number(parsed.data.measures) : null,
+      notes: parsed.data.notes?.trim() || null,
+    });
+    revalidateSong(songId);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    console.error("addSectionAction", e);
+    return { ok: false, error: "Não foi possível adicionar o trecho." };
+  }
+}
+
+export async function updateSectionAction(
+  songId: string,
+  sectionId: string,
+  values: SectionFormValues
+): Promise<ActionResult> {
+  const parsed = sectionFormSchema.safeParse(values);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos" };
+  }
+  try {
+    const org = await getCurrentOrganization();
+    await songService.updateSongSection(org.id, sectionId, {
+      name: parsed.data.name.trim(),
+      measures: parsed.data.measures ? Number(parsed.data.measures) : null,
+      notes: parsed.data.notes?.trim() || null,
+    });
+    revalidateSong(songId);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    console.error("updateSectionAction", e);
+    return { ok: false, error: "Não foi possível salvar o trecho." };
+  }
+}
+
+export async function removeSectionAction(
+  songId: string,
+  sectionId: string
+): Promise<ActionResult> {
+  try {
+    const org = await getCurrentOrganization();
+    await songService.removeSongSection(org.id, sectionId);
+    revalidateSong(songId);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    console.error("removeSectionAction", e);
+    return { ok: false, error: "Não foi possível remover o trecho." };
+  }
+}
+
+export async function reorderSectionsAction(
+  songId: string,
+  versionId: string,
+  sectionIds: string[]
+): Promise<ActionResult> {
+  try {
+    const org = await getCurrentOrganization();
+    await songService.reorderSongSections(org.id, versionId, sectionIds);
+    revalidateSong(songId);
+    return { ok: true, data: undefined };
+  } catch (e) {
+    console.error("reorderSectionsAction", e);
+    return { ok: false, error: "Não foi possível reordenar os trechos." };
   }
 }
 
